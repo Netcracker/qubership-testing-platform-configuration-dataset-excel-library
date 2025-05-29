@@ -48,7 +48,7 @@ public class VariablesBuilder<Param, Params> {
 
     /**
      * <pre>
-     * Makes the {@link DS#getVariables()} to return a Map< Param,Object>
+     * Makes the {@link DS#getVariables()} to return a Map of Param, Object
      * Param is specified on the previous builder step
      * </pre>
      *
@@ -76,7 +76,7 @@ public class VariablesBuilder<Param, Params> {
 
     /**
      * <pre>
-     *     Makes the {@link DS#getVariables()} to return a Map< Param,Var>
+     *     Makes the {@link DS#getVariables()} to return a Map of Param, Var
      *     Param is specified on the previous builder step
      * </pre>
      *

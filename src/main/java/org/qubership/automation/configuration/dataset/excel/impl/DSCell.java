@@ -17,6 +17,7 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl;
 
+import org.apache.poi.ss.usermodel.CellType;
 import org.qubership.automation.configuration.dataset.excel.core.DS;
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
 import org.apache.poi.ss.usermodel.Cell;
@@ -37,7 +38,7 @@ public class DSCell {
      * returns an object which is able to recalculate its string value each time {@link Object#toString()} invoked
      * in case if cell is actually a formula and represents mutable data (values).
      * Invoke of {@link Object#toString()} may return {@link org.apache.commons.lang3.StringUtils#EMPTY},
-     * see {@link EvaluationContext#getCellValue(int, org.apache.poi.ss.usermodel.Cell)}
+     * see {@link EvaluationContext#getCellValue(org.apache.poi.ss.usermodel.Cell)}
      *
      *
      * can be used as {@link DS#getVariables()} return parameters

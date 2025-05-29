@@ -39,7 +39,7 @@ import java.util.function.Predicate;
  * Takes first iterator, filters it by provided predicates({@link #addPredicates(Iterator)}),
  * Requests for the callBack function for cells in each column using CB provider ({@link #setCBProvider(ColumnHandler)})
  * This request consist of {@link Pair} mapping between provided predicate and found cell matches it.
- *  !limitation: 1 cell = 1 callBack => 1 request to provider with firstly matched predicate
+ *  !limitation: 1 cell - 1 callBack - 1 request to provider with firstly matched predicate
  *
  * All the next iterators are processed with next strategy, which:
  * filters columns by numbers, invokes callback  bound to it.

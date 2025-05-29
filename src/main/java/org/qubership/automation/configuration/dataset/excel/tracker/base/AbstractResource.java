@@ -158,9 +158,9 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
     }
 
     /**
-     * does callable if status {@link ResourceStatus#haveResource()}<br/>
-     * returns result if all is ok<br/>
-     * fails status with {@link ResourceStatus#FAILED_TO_UPDATE} if not<br/>
+     * does callable if status {@link ResourceStatus#haveResource()}<br>
+     * returns result if all is ok<br>
+     * fails status with {@link ResourceStatus#FAILED_TO_UPDATE} if not<br>
      */
     protected <V> Optional<V> processResource(@Nullable ResourceStatus newStatus, @Nonnull Callable<V> callable) {
         V result;
@@ -181,12 +181,12 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
     }
 
     /**
-     * checks files for modifications (references included)<br/>
-     * recreates workbooks if something changed<br/>
-     * manages {@link #shouldUpdateRefs} properties: sets to true if this or some ref has been changed<br/>
-     * stateless method, so doesn't know current resource status<br/>
+     * checks files for modifications (references included)<br>
+     * recreates workbooks if something changed<br>
+     * manages {@link #shouldUpdateRefs} properties: sets to true if this or some ref has been changed<br>
+     * stateless method, so doesn't know current resource status<br>
      *
-     * @return may return the 'SAME' status even if resource is 'DELETED' for example<br/>
+     * @return may return the 'SAME' status even if resource is 'DELETED' for example<br>
      */
     protected ResourceStatus beforeCollaborationHierarchyUpdate() {
         ResourceStatus status = beforeCollaborationUpdate();
@@ -199,10 +199,10 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
     }
 
     /**
-     * builds tree of AbstractResources:<br/>
-     * takes refs path with {@link #getMyRefsPaths()}<br/>
-     * takes corresponding resources using {@link #refsSup}<br/>
-     * puts it to {@link #myRefs} and {@link #refsToMe}<br/>
+     * builds tree of AbstractResources:<br>
+     * takes refs path with {@link #getMyRefsPaths()}<br>
+     * takes corresponding resources using {@link #refsSup}<br>
+     * puts it to {@link #myRefs} and {@link #refsToMe}<br>
      *
      * @return true if this or some ref has been changed
      */

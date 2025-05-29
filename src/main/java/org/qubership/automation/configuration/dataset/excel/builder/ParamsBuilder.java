@@ -37,7 +37,7 @@ public class ParamsBuilder {
 
     /**
      * <pre>
-     * Makes the {@link DSList#getParameters()} to return the List< Param>
+     * Makes the {@link DSList#getParameters()} to return Param object
      * </pre>
      *
      * @param paramEntryConv function to generate the Params. See {@link ParamsEntryConverter}
@@ -49,7 +49,7 @@ public class ParamsBuilder {
     }
 
     /**
-     * Makes the {@link DSList#getParameters()} to return the List< String>
+     * Makes the {@link DSList#getParameters()} to return the VariablesBuilder
      *
      * @return
      */
@@ -58,7 +58,7 @@ public class ParamsBuilder {
     }
 
     /**
-     * @param paramEntryConv  will be used to do the Param< - >Value mapping. See {@link ParamsEntryConverter}
+     * @param paramEntryConv  will be used to do the Param-to-Value mapping. See {@link ParamsEntryConverter}
      * @param paramsConverter aggregate function for the all Param.
      *                        Makes the {@link DSList#getParameters()} to return the Params
      * @param <Param>         used in the {@link VarsEntryConverter}
