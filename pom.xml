@@ -17,7 +17,7 @@
     </properties>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Diameter Transport library</description>
+    <description>Configuration Dataset Excel library</description>
     <url>https://github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library</url>
     <licenses>
         <license>
