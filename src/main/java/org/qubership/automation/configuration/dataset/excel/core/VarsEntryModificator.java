@@ -27,6 +27,11 @@ import org.qubership.automation.configuration.dataset.excel.impl.morphcells.Chan
 public interface VarsEntryModificator<Param> {
 
     /**
+     * Modify Vars Entry.
+     *
+     * @param entity DSCell entity to process
+     * @param param DSCell param to process
+     * @param convertedParam Param converted parameter object
      * @param value proxy, which can track changes,
      *              see {@link Changelist}
      */

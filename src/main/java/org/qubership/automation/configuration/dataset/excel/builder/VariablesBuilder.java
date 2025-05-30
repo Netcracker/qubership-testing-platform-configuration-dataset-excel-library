@@ -17,6 +17,15 @@
 
 package org.qubership.automation.configuration.dataset.excel.builder;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.qubership.automation.configuration.dataset.excel.core.DS;
 import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
@@ -24,112 +33,141 @@ import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConver
 import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
 import org.qubership.automation.configuration.dataset.excel.impl.Utils;
 import org.qubership.automation.configuration.dataset.excel.impl.VarEntity;
-import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class VariablesBuilder<Param, Params> {
+
+    /**
+     * ParamsBuilder parent object.
+     */
     private final ParamsBuilder parent;
+
+    /**
+     * Supplier of ParamsEntryConverters.
+     */
     private final Supplier<ParamsEntryConverter<Param>> paramEntryConv;
+
+    /**
+     * Supplier of Functions.
+     */
     private final Supplier<Function<Iterator<Param>, Params>> paramsConverter;
 
-    VariablesBuilder(@Nonnull ParamsBuilder parent,
-                     @Nonnull Supplier<ParamsEntryConverter<Param>> paramEntryConv,
-                     @Nonnull Supplier<Function<Iterator<Param>, Params>> paramsConverter) {
+    /**
+     * Constructor.
+     *
+     * @param parent ParamsBuilder parent object
+     * @param paramEntryConv Supplier of ParamsEntryConverter
+     * @param paramsConverter Supplier of Functions.
+     */
+    VariablesBuilder(@Nonnull final ParamsBuilder parent,
+                     @Nonnull final Supplier<ParamsEntryConverter<Param>> paramEntryConv,
+                     @Nonnull final Supplier<Function<Iterator<Param>, Params>> paramsConverter) {
         this.parent = parent;
         this.paramEntryConv = paramEntryConv;
         this.paramsConverter = paramsConverter;
     }
 
     /**
-     * <pre>
      * Makes the {@link DS#getVariables()} to return a Map of Param, Object
-     * Param is specified on the previous builder step
-     * </pre>
+     * Param is specified on the previous builder step.
      *
-     * @return
+     * @param reevaluate boolean; if true - ALWAYS mode, otherwise NEVER mode
+     * @return FinishBuilder object.
      */
-    public FinishBuilder<Param, Params, Pair<Param, Object>, Map<Param, Object>> paramToObjMap(boolean reevaluate) {
-        return mapVars(new VarsEntryConverter<Param, Pair<Param, Object>>() {
-            @Nullable
-            @Override
-            public Pair<Param, Object> doVarsEntry(@Nullable DSCell entity, @Nonnull DSCell param, @Nonnull Param convertedParam, @Nonnull DSCell value) {
-                return Pair.of(convertedParam, value.getValue());
-            }
-        }, reevaluate ? ReevaluateFormulas.ALWAYS : ReevaluateFormulas.NEVER);
-    }
-
-    public FinishBuilder<Param, Params, Pair<Param, String>, Map<Param, String>> paramToStringMap(boolean reevaluate) {
-        return mapVars(new VarsEntryConverter<Param, Pair<Param, String>>() {
-            @Nullable
-            @Override
-            public Pair<Param, String> doVarsEntry(@Nullable DSCell entity, @Nonnull DSCell param, @Nonnull Param convertedParam, @Nonnull DSCell value) {
-                return Pair.of(convertedParam, value.getStringValue());
-            }
-        }, reevaluate ? ReevaluateFormulas.IN_CONVERTER : ReevaluateFormulas.NEVER);
+    public FinishBuilder<Param, Params, Pair<Param, Object>, Map<Param, Object>> paramToObjMap(
+            final boolean reevaluate) {
+        return mapVars((entity, param, convertedParam, value)
+                -> Pair.of(convertedParam, value.getValue()),
+                reevaluate ? ReevaluateFormulas.ALWAYS : ReevaluateFormulas.NEVER);
     }
 
     /**
-     * <pre>
-     *     Makes the {@link DS#getVariables()} to return a Map of Param, Var
-     *     Param is specified on the previous builder step
-     * </pre>
+     * Makes the {@link DS#getVariables()} to return a Map of Param, String
+     * Param is specified on the previous builder step.
+     *
+     * @param reevaluate boolean; if true - IN_CONVERTER mode, otherwise NEVER mode
+     * @return FinishBuilder object.
+     */
+    public FinishBuilder<Param, Params, Pair<Param, String>, Map<Param, String>> paramToStringMap(
+            final boolean reevaluate) {
+        return mapVars((entity, param, convertedParam, value) ->
+                Pair.of(convertedParam, value.getStringValue()),
+                reevaluate ? ReevaluateFormulas.IN_CONVERTER : ReevaluateFormulas.NEVER);
+    }
+
+    /**
+     * Makes the {@link DS#getVariables()} to return a Map of Param, Var
+     * Param is specified on the previous builder step.
      *
      * @param varEntryConverter See {@link VarsEntryConverter}
-     * @param <Var>             part of the {@link DS#getVariables()}
-     * @return
+     * @param strategy Strategy of formulas re-evaluation
+     * @return new FinishBuilder object.
      */
-    public <Var> FinishBuilder<Param, Params, Pair<Param, Var>, Map<Param, Var>> mapVars(@Nonnull VarsEntryConverter<Param, Pair<Param, Var>> varEntryConverter,
-                                                                                         @Nonnull ReevaluateFormulas strategy) {
-        return customVars(varEntryConverter, Utils.<Param, Var>mapVarsFunc(), strategy);
+    public <Var> FinishBuilder<Param, Params, Pair<Param, Var>, Map<Param, Var>> mapVars(
+            @Nonnull final VarsEntryConverter<Param, Pair<Param, Var>> varEntryConverter,
+            @Nonnull final ReevaluateFormulas strategy) {
+        return customVars(varEntryConverter, Utils.mapVarsFunc(), strategy);
     }
 
     /**
+     * Makes the {@link DS#getVariables()} to return a Map of Param, Var
+     * Param is specified on the previous builder step.
+     *
      * @param varEntryConverter See {@link VarsEntryConverter}
      * @param varsConverter     aggregate function for the all Var.
      *                          Makes the {@link DS#getVariables()} to return the Vars
-     * @param <Var>             part of the {@link DS#getVariables()}
-     * @param <Vars>            type of the {@link DS#getVariables()}
-     * @return
+     * @param strategy Strategy of formulas re-evaluation
+     * @return new FinishBuilder object.
      */
-    public <Var, Vars> FinishBuilder<Param, Params, Var, Vars> customVars(@Nonnull VarsEntryConverter<Param, Var> varEntryConverter,
-                                                                          @Nonnull Function<Iterator<Var>, Vars> varsConverter,
-                                                                          @Nonnull ReevaluateFormulas strategy) {
+    public <Var, Vars> FinishBuilder<Param, Params, Var, Vars> customVars(
+            @Nonnull final VarsEntryConverter<Param, Var> varEntryConverter,
+            @Nonnull final Function<Iterator<Var>, Vars> varsConverter,
+            @Nonnull final ReevaluateFormulas strategy) {
         return customVars(() -> varEntryConverter, () -> varsConverter, strategy);
     }
 
     /**
-     * same as {@link #customVars(VarsEntryConverter, Function, ReevaluateFormulas)}
-     * with variables in form of {@link VarEntity}
+     * The same as {@link #customVars(VarsEntryConverter, Function, ReevaluateFormulas)}
+     * with variables in form of {@link VarEntity}.
+     *
+     * @param varsConverter Functions
+     * @param strategy Strategy of formulas re-evaluation
+     * @return new FinishBuilder object.
      */
-    public <Vars> FinishBuilder<Param, Params, VarEntity<Param>, Vars> customVars(@Nonnull Function<Iterator<VarEntity<Param>>, Vars> varsConverter,
-                                                                                  @Nonnull ReevaluateFormulas strategy) {
+    public <Vars> FinishBuilder<Param, Params, VarEntity<Param>, Vars> customVars(
+            @Nonnull final Function<Iterator<VarEntity<Param>>, Vars> varsConverter,
+            @Nonnull final ReevaluateFormulas strategy) {
         return customVars(() -> varsConverter, strategy);
     }
 
     /**
-     * same as {@link #customVars(VarsEntryConverter, Function, ReevaluateFormulas)}
-     * but with an ability to pass stateful converters,
-     * with variables in form of {@link VarEntity}
+     * The same as {@link #customVars(VarsEntryConverter, Function, ReevaluateFormulas)}
+     * but with an ability to pass stateful converters, with variables in form of {@link VarEntity}.
+     * Default Supplier of VarsEntryConverter is used.
+     *
+     * @param varsConverter Supplier of Functions
+     * @param strategy Strategy of formulas re-evaluation
+     * @return new FinishBuilder object.
      */
-    public <Vars> FinishBuilder<Param, Params, VarEntity<Param>, Vars> customVars(@Nonnull Supplier<Function<Iterator<VarEntity<Param>>, Vars>> varsConverter,
-                                                                                  @Nonnull ReevaluateFormulas strategy) {
-        Supplier<VarsEntryConverter<Param, VarEntity<Param>>> varEntryConverter = () -> (Utils.defaultVarEntryConv());
+    public <Vars> FinishBuilder<Param, Params, VarEntity<Param>, Vars> customVars(
+            @Nonnull final Supplier<Function<Iterator<VarEntity<Param>>, Vars>> varsConverter,
+            @Nonnull final ReevaluateFormulas strategy) {
+        Supplier<VarsEntryConverter<Param, VarEntity<Param>>> varEntryConverter = Utils::defaultVarEntryConv;
         return customVars(varEntryConverter, varsConverter, strategy);
     }
 
     /**
-     * same as {@link #customVars(VarsEntryConverter, Function, ReevaluateFormulas)}
-     * but with an ability to pass stateful converters
+     * The same as {@link #customVars(VarsEntryConverter, Function, ReevaluateFormulas)}
+     * but with an ability to pass stateful converters.
+     *
+     * @param varEntryConverter Supplier of VarsEntryConverter
+     * @param varsConverter Supplier of Functions
+     * @param strategy Strategy of formulas re-evaluation
+     * @return new FinishBuilder object.
      */
-    public <Var, Vars> FinishBuilder<Param, Params, Var, Vars> customVars(@Nonnull Supplier<VarsEntryConverter<Param, Var>> varEntryConverter,
-                                                                          @Nonnull Supplier<Function<Iterator<Var>, Vars>> varsConverter,
-                                                                          @Nonnull ReevaluateFormulas strategy) {
+    public <Var, Vars> FinishBuilder<Param, Params, Var, Vars> customVars(
+            @Nonnull final Supplier<VarsEntryConverter<Param, Var>> varEntryConverter,
+            @Nonnull final Supplier<Function<Iterator<Var>, Vars>> varsConverter,
+            @Nonnull final ReevaluateFormulas strategy) {
         return new FinishBuilder<>(parent.parent.parent.wb,
                 parent.parent.parent.selectedSheets,
                 parent.parent.columns,

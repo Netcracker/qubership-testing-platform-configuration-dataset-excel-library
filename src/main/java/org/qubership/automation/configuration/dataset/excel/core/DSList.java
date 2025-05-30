@@ -17,20 +17,34 @@
 
 package org.qubership.automation.configuration.dataset.excel.core;
 
+import java.util.Set;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 public interface DSList<Param, Params, Vars> extends Named {
 
+    /**
+     * Get Set of datasets.
+     *
+     * @return Set of DS objects.
+     */
     @Nonnull
     Set<DS<Param, Vars>> getDataSets();
 
+    /**
+     * Get dataset.
+     *
+     * @param name String dataset name
+     * @return DS object.
+     */
     @Nullable
     DS<Param, Vars> getDataSet(@Nonnull String name);
 
     /**
-     * @return keys, specified for the nested dataSets
+     * Get dataset list parameters.
+     *
+     * @return keys, specified for the nested dataSets.
      */
     @Nonnull
     Params getParameters();

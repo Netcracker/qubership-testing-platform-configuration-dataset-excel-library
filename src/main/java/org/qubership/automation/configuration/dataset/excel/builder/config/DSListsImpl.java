@@ -17,8 +17,13 @@
 
 package org.qubership.automation.configuration.dataset.excel.builder.config;
 
-import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.Iterators;
+import java.util.Iterator;
+import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.qubership.automation.configuration.dataset.excel.core.DSList;
 import org.qubership.automation.configuration.dataset.excel.core.DSLists;
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
@@ -26,22 +31,36 @@ import org.qubership.automation.configuration.dataset.excel.impl.AbstractDSForme
 import org.qubership.automation.configuration.dataset.excel.impl.DSFormer;
 import org.qubership.automation.configuration.dataset.excel.impl.EvaluationContext;
 import org.qubership.automation.configuration.dataset.excel.impl.Utils;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-import java.util.function.Supplier;
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.Iterators;
 
 /**
- * This iterable makes possible to modify base config properties before use
+ * This iterable makes possible to modify base config properties before use.
  */
 public class DSListsImpl<Param, Params, Var, Vars> implements DSLists<Param, Params, Vars> {
+
+    /**
+     * DTBaseConfig object.
+     */
     public final DTBaseConfig<Param, Params, Var, Vars> baseConfig;
+
+    /**
+     * Supplier of EvaluationContext.
+     */
     private final Supplier<EvaluationContext> contextSup;
+
+    /**
+     * EvaluationContext object.
+     */
     private volatile EvaluationContext evaluationContext;
 
-    public DSListsImpl(@Nonnull DTBaseConfig<Param, Params, Var, Vars> baseConfig) {
+    /**
+     * Constructor.
+     *
+     * @param baseConfig DTBaseConfig object.
+     */
+    public DSListsImpl(@Nonnull final DTBaseConfig<Param, Params, Var, Vars> baseConfig) {
         this.baseConfig = baseConfig;
         final Workbook wb = baseConfig.config.wb;
         final ReevaluateFormulas strategy = baseConfig.config.evalStrategy;
@@ -52,22 +71,37 @@ public class DSListsImpl<Param, Params, Var, Vars> implements DSLists<Param, Par
         this.contextSup = contextSup;
     }
 
-    private AbstractDSFormer<Param, Params, Var, Vars> doDSFormer(@Nonnull Sheet sheet) {
+    private AbstractDSFormer<Param, Params, Var, Vars> doDSFormer(@Nonnull final Sheet sheet) {
         return new DSFormer<>(sheet, baseConfig.config,
                 baseConfig.paramsEntryConverter, baseConfig.varsEntryConverter,
                 evaluationContext);
     }
 
+    /**
+     * Get config.
+     *
+     * @return BaseConfig object.
+     */
     @Override
     public BaseConfig<Param, Params, ?, Vars> getConfig() {
         return baseConfig.config;
     }
 
+    /**
+     * Get evaluationContext.
+     *
+     * @return EvaluationContext object.
+     */
     @Override
     public EvaluationContext getEvaluationContext() {
         return this.evaluationContext;
     }
 
+    /**
+     * Get DSList iterator.
+     *
+     * @return DSList iterator.
+     */
     @Override
     public Iterator<DSList<Param, Params, Vars>> iterator() {
         this.evaluationContext = contextSup.get();
@@ -79,9 +113,7 @@ public class DSListsImpl<Param, Params, Var, Vars> implements DSLists<Param, Par
                 while (sheets.hasNext() && next == null) {
                     next = doDSFormer(sheets.next()).get();
                 }
-                if (next != null)
-                    return next;
-                return endOfData();
+                return next == null ? endOfData() : next;
             }
         };
     }
@@ -91,6 +123,11 @@ public class DSListsImpl<Param, Params, Var, Vars> implements DSLists<Param, Par
                 baseConfig.config.sheetsPred::test);
     }
 
+    /**
+     * Make String representation of the object.
+     *
+     * @return String representation of the object.
+     */
     @Override
     public String toString() {
         return baseConfig.config.sourceQualifier;

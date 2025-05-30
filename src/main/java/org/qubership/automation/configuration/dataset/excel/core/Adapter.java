@@ -21,8 +21,20 @@ import javax.annotation.Nonnull;
 
 public interface Adapter<P, V> {
 
+    /**
+     * Make DatasetList with specified name and parameters.
+     *
+     * @param name String dataSetList name
+     * @param parameters Collection of dataSetList parameters.
+     */
     void doDataSetList(@Nonnull String name, P parameters);
 
+    /**
+     * Make Dataset with specified name and variables.
+     *
+     * @param name String dataSet name
+     * @param variables Collection of dataSet variables.
+     */
     void doDataSet(@Nonnull String name, V variables);
 
 }

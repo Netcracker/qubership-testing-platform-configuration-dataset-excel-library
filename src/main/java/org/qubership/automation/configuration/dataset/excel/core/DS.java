@@ -21,14 +21,20 @@ import javax.annotation.Nonnull;
 
 public interface DS<Param, Vars> extends Named {
 
+    /**
+     * Get variables.
+     *
+     * @return Vars object.
+     */
     Vars getVariables();
 
     /**
-     * !! works only with {@link ReevaluateFormulas#IN_CONVERTER} strategy
+     * Get variables; works only with {@link ReevaluateFormulas#IN_CONVERTER} strategy.
      *
-     * @param modificator did modifications of value cells of each variable entry.
-     *                    this modifications are temporarily, just for returned vars
-     * @throws IllegalArgumentException if reevaluate formulas strategy is wrong
+     * @param modificator did modifications of value cells of each variable entry;
+     *                    these modifications are temporarily, just for returned vars
+     * @return Vars object
+     * @throws IllegalArgumentException if reevaluate formulas strategy is wrong.
      */
     Vars getVariables(@Nonnull VarsEntryModificator<Param> modificator);
 }

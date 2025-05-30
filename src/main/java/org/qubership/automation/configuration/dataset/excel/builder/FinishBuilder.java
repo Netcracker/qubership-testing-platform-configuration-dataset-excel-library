@@ -17,9 +17,17 @@
 
 package org.qubership.automation.configuration.dataset.excel.builder;
 
+import java.util.Iterator;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.qubership.automation.configuration.dataset.excel.builder.config.BaseConfig;
 import org.qubership.automation.configuration.dataset.excel.builder.config.DTBaseConfig;
-
 import org.qubership.automation.configuration.dataset.excel.core.Adapter;
 import org.qubership.automation.configuration.dataset.excel.core.DS;
 import org.qubership.automation.configuration.dataset.excel.core.DSList;
@@ -28,37 +36,73 @@ import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConv
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Reusable.
- * Stateless settings with an ability to pass settings thru suppliers.
+ * Stateless settings with an ability to pass settings through suppliers.
  */
 public class FinishBuilder<Param, Params, Var, Vars> {
+
+    /**
+     * Workbook Supplier object.
+     */
     final Supplier<Workbook> workbook;
+
+    /**
+     * Supplier of Sheet Predicates.
+     */
     final Supplier<Predicate<Sheet>> sheets;
+
+    /**
+     * Supplier of DSCell Predicates.
+     */
     final Supplier<Predicate<DSCell>> columns;
+
+    /**
+     * Supplier of Param Functions.
+     */
     final Supplier<Function<Iterator<Param>, Params>> paramsConverter;
+
+    /**
+     * Supplier of Var Functions.
+     */
     final Supplier<Function<Iterator<Var>, Vars>> valuesConverter;
+
+    /**
+     * Supplier of ParamsEntryConverter.
+     */
     final Supplier<ParamsEntryConverter<Param>> paramEntryConverter;
+
+    /**
+     * Supplier of VarsEntryConverter.
+     */
     final Supplier<VarsEntryConverter<Param, Var>> varEntryConverter;
+
+    /**
+     * Variant of Formulas Re-evaluation.
+     */
     final ReevaluateFormulas evalStrat;
 
-    FinishBuilder(@Nonnull Supplier<Workbook> workbook,
-                  @Nonnull Supplier<Predicate<Sheet>> sheets,
-                  @Nonnull Supplier<Predicate<DSCell>> columns,
-                  @Nonnull Supplier<Function<Iterator<Param>, Params>> paramsConverter,
-                  @Nonnull Supplier<Function<Iterator<Var>, Vars>> valuesConverter,
-                  @Nonnull Supplier<ParamsEntryConverter<Param>> paramEntryConverter,
-                  @Nonnull Supplier<VarsEntryConverter<Param, Var>> varEntryConverter,
-                  @Nonnull ReevaluateFormulas evalStrat) {
+    /**
+     * Constructor.
+     *
+     * @param workbook Workbook Supplier object
+     * @param sheets Supplier of Sheet Predicates
+     * @param columns Supplier of DSCell Predicates
+     * @param paramsConverter Supplier of Param Functions
+     * @param valuesConverter Supplier of Var Functions
+     * @param paramEntryConverter Supplier of ParamsEntryConverter
+     * @param varEntryConverter Supplier of VarsEntryConverter
+     * @param evalStrat Variant of Formulas Re-evaluation.
+     */
+    FinishBuilder(@Nonnull final Supplier<Workbook> workbook,
+                  @Nonnull final Supplier<Predicate<Sheet>> sheets,
+                  @Nonnull final Supplier<Predicate<DSCell>> columns,
+                  @Nonnull final Supplier<Function<Iterator<Param>, Params>> paramsConverter,
+                  @Nonnull final Supplier<Function<Iterator<Var>, Vars>> valuesConverter,
+                  @Nonnull final Supplier<ParamsEntryConverter<Param>> paramEntryConverter,
+                  @Nonnull final Supplier<VarsEntryConverter<Param, Var>> varEntryConverter,
+                  @Nonnull final ReevaluateFormulas evalStrat) {
         this.workbook = workbook;
         this.sheets = sheets;
         this.columns = columns;
@@ -69,10 +113,20 @@ public class FinishBuilder<Param, Params, Var, Vars> {
         this.evalStrat = evalStrat;
     }
 
+    /**
+     * Create DSList Iterator.
+     *
+     * @return new DSList Iterator object.
+     */
     public Iterator<DSList<Param, Params, Vars>> buildIterator() {
         return build().iterator();
     }
 
+    /**
+     * Create DSLists.
+     *
+     * @return new DSLists object.
+     */
     public DSLists<Param, Params, Vars> build() {
         BaseConfig<Param, Params, Var, Vars> config = new BaseConfig<>(workbook.toString(),
                 workbook.get(),
@@ -85,7 +139,12 @@ public class FinishBuilder<Param, Params, Var, Vars> {
         return (new DTBaseConfig<>(config, paramEntryConverter.get(), varEntryConverter.get())).build();
     }
 
-    public void fill(@Nonnull Adapter<Params, Vars> adapter) {
+    /**
+     * Fill DSLists.
+     *
+     * @param adapter Adapter of Params vs. Vars.
+     */
+    public void fill(@Nonnull final Adapter<Params, Vars> adapter) {
         Iterator<DSList<Param, Params, Vars>> listIter = buildIterator();
         while (listIter.hasNext()) {
             DSList<Param, Params, Vars> list = listIter.next();

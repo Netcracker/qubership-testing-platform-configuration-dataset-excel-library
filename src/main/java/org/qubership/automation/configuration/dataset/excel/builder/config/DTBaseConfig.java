@@ -17,26 +17,49 @@
 
 package org.qubership.automation.configuration.dataset.excel.builder.config;
 
+import javax.annotation.Nonnull;
+
 import org.qubership.automation.configuration.dataset.excel.core.DSLists;
 import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 
-import javax.annotation.Nonnull;
-
 public class DTBaseConfig<Param, Params, Var, Vars> {
 
+    /**
+     * BaseConfig object.
+     */
     public final BaseConfig<Param, Params, Var, Vars> config;
+
+    /**
+     * Params Entry Converter object.
+     */
     public final ParamsEntryConverter<Param> paramsEntryConverter;
+
+    /**
+     * Vars Entry Converter object.
+     */
     public final VarsEntryConverter<Param, Var> varsEntryConverter;
 
-    public DTBaseConfig(@Nonnull BaseConfig<Param, Params, Var, Vars> config,
-                        @Nonnull ParamsEntryConverter<Param> paramsEntryConverter,
-                        @Nonnull VarsEntryConverter<Param, Var> varsEntryConverter) {
+    /**
+     * Constructor.
+     *
+     * @param config BaseConfig object
+     * @param paramsEntryConverter Params Entry Converter object
+     * @param varsEntryConverter Vars Entry Converter object.
+     */
+    public DTBaseConfig(@Nonnull final BaseConfig<Param, Params, Var, Vars> config,
+                        @Nonnull final ParamsEntryConverter<Param> paramsEntryConverter,
+                        @Nonnull final VarsEntryConverter<Param, Var> varsEntryConverter) {
         this.config=config;
         this.paramsEntryConverter = paramsEntryConverter;
         this.varsEntryConverter = varsEntryConverter;
     }
 
+    /**
+     * Build DSLists.
+     *
+     * @return new DSListsImpl object.
+     */
     @Nonnull
     public DSLists<Param, Params, Vars> build() {
         return new DSListsImpl<>(this);

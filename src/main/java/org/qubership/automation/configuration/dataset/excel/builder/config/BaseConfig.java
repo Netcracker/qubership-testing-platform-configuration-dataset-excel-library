@@ -17,38 +17,83 @@
 
 package org.qubership.automation.configuration.dataset.excel.builder.config;
 
-import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
-import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
-import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
+import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
+import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
+
 /**
- * Holds base settings
+ * Base settings holder.
  */
 public class BaseConfig<Param, Params, Var, Vars> {
+
+    /**
+     * String qualifier of the source.
+     */
     public final String sourceQualifier;
-    public final Workbook wb;//for synchronize/locking purposes
+
+    /**
+     * Workbook object.
+     */
+    public final Workbook wb; // for synchronize/locking purposes
+
+    /**
+     * Predicate of DSCells.
+     */
     public final Predicate<DSCell> columnsPred;
+
+    /**
+     * Strategy of formulas re-evaluation.
+     */
     public final ReevaluateFormulas evalStrategy;
+
+    /**
+     * Function to convert Params.
+     */
     public final Function<Iterator<Param>, Params> paramsConverter;
+
+    /**
+     * Supplier of VarsEntryConverters.
+     */
     public final Supplier<VarsEntryConverter<Param, Var>> varConverter;
+
+    /**
+     * Supplier of Functions.
+     */
     public final Supplier<Function<Iterator<Var>, Vars>> varsConverter;
+
+    /**
+     * Predicate of Sheets.
+     */
     public final Predicate<Sheet> sheetsPred;
 
-    public BaseConfig(@Nonnull String sourceQualifier,
+    /**
+     * Constructor.
+     *
+     * @param sourceQualifier String qualifier of the source
+     * @param wb Workbook object
+     * @param sheetsPred Predicate of Sheets
+     * @param columnsPred Predicate of DSCells
+     * @param paramsConverter Function to convert Params
+     * @param varConverter Supplier of VarsEntryConverters
+     * @param varsConverter Supplier of Functions
+     * @param evalStrategy Strategy of formulas re-evaluation.
+     */
+    public BaseConfig(@Nonnull final String sourceQualifier,
                       @Nonnull final Workbook wb,
-                      @Nonnull Predicate<Sheet> sheetsPred,
-                      @Nonnull Predicate<DSCell> columnsPred,
-                      @Nonnull Function<Iterator<Param>, Params> paramsConverter,
-                      @Nonnull Supplier<VarsEntryConverter<Param, Var>> varConverter,
-                      @Nonnull Supplier<Function<Iterator<Var>, Vars>> varsConverter,
+                      @Nonnull final Predicate<Sheet> sheetsPred,
+                      @Nonnull final Predicate<DSCell> columnsPred,
+                      @Nonnull final Function<Iterator<Param>, Params> paramsConverter,
+                      @Nonnull final Supplier<VarsEntryConverter<Param, Var>> varConverter,
+                      @Nonnull final Supplier<Function<Iterator<Var>, Vars>> varsConverter,
                       @Nonnull final ReevaluateFormulas evalStrategy) {
         this.sourceQualifier = sourceQualifier;
         this.wb = wb;

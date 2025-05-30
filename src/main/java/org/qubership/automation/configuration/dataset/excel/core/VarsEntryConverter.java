@@ -17,10 +17,10 @@
 
 package org.qubership.automation.configuration.dataset.excel.core;
 
-import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
 
 /**
  * <pre>
@@ -36,6 +36,15 @@ import javax.annotation.Nullable;
  */
 public interface VarsEntryConverter<Param, Var> {
 
+    /**
+     * Process Vars Entry.
+     *
+     * @param entity DSCell entity to process
+     * @param param DSCell param to process
+     * @param convertedParam Param converted parameter object
+     * @param value DSCell converted value
+     * @return Var object.
+     */
     @Nullable
     Var doVarsEntry(@Nullable DSCell entity,
                     @Nonnull DSCell param,

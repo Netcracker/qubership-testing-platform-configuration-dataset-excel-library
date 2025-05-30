@@ -21,7 +21,18 @@ import org.qubership.automation.configuration.dataset.excel.builder.config.BaseC
 import org.qubership.automation.configuration.dataset.excel.impl.EvaluationContext;
 
 public interface DSLists<Param, Params, Vars> extends Iterable<DSList<Param, Params, Vars>> {
+
+    /**
+     * Get config.
+     *
+     * @return BaseConfig object.
+     */
     BaseConfig<Param, Params, ?, Vars> getConfig();
 
+    /**
+     * Get Evaluation Context.
+     *
+     * @return EvaluationContext object.
+     */
     EvaluationContext getEvaluationContext();
 }

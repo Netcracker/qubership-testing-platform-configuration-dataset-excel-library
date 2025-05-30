@@ -17,14 +17,22 @@
 
 package org.qubership.automation.configuration.dataset.excel.core;
 
-import org.apache.poi.ss.usermodel.Cell;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.function.Predicate;
+
+import org.apache.poi.ss.usermodel.Cell;
 
 public interface ColumnHandler {
 
+    /**
+     * Get column handler.
+     *
+     * @param headerCell Cell of column header
+     * @param by Predicate of Cells
+     * @return Cell Consumer object.
+     */
     @Nullable
     Consumer<Cell> getHandler(@Nonnull Cell headerCell, @Nonnull Predicate<Cell> by);
 }

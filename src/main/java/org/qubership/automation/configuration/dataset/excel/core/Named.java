@@ -21,8 +21,18 @@ import javax.annotation.Nonnull;
 
 public interface Named {
 
+    /**
+     * Get name.
+     *
+     * @return String name.
+     */
     @Nonnull
     String getName();
 
+    /**
+     * Set name.
+     *
+     * @param name String name to set.
+     */
     void setName(@Nonnull String name);
 }

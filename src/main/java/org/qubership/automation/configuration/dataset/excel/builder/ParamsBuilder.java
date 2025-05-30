@@ -17,65 +17,80 @@
 
 package org.qubership.automation.configuration.dataset.excel.builder;
 
-import org.qubership.automation.configuration.dataset.excel.core.DSList;
-import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
-import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
-import org.qubership.automation.configuration.dataset.excel.impl.Utils;
-
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
+import org.qubership.automation.configuration.dataset.excel.core.DSList;
+import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
+import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
+import org.qubership.automation.configuration.dataset.excel.impl.Utils;
+
 public class ParamsBuilder {
+
+    /**
+     * SheetsDataSetBuilder object.
+     */
     final SheetsDataSetBuilder parent;
 
-    ParamsBuilder(@Nonnull SheetsDataSetBuilder parent) {
+    /**
+     * Constructor.
+     *
+     * @param parent SheetsDataSetBuilder object.
+     */
+    ParamsBuilder(@Nonnull final SheetsDataSetBuilder parent) {
         this.parent = parent;
     }
 
     /**
-     * <pre>
-     * Makes the {@link DSList#getParameters()} to return Param object
-     * </pre>
+     * Makes the {@link DSList#getParameters()} to return Param object.
      *
      * @param paramEntryConv function to generate the Params. See {@link ParamsEntryConverter}
-     * @param <Param>
-     * @return
+     * @return VariablesBuilder object.
      */
-    public <Param> VariablesBuilder<Param, List<Param>> listParams(@Nonnull final ParamsEntryConverter<Param> paramEntryConv) {
-        return customParams(paramEntryConv, Utils.<Param>listParamsFunc());
+    public <Param> VariablesBuilder<Param, List<Param>> listParams(
+            @Nonnull final ParamsEntryConverter<Param> paramEntryConv) {
+        return customParams(paramEntryConv, Utils.listParamsFunc());
     }
 
     /**
-     * Makes the {@link DSList#getParameters()} to return the VariablesBuilder
+     * Makes the {@link DSList#getParameters()} to return the VariablesBuilder.
      *
-     * @return
+     * @return VariablesBuilder object.
      */
     public VariablesBuilder<String, List<String>> listOfStringsParams() {
         return listParams(Utils.STRING_PAR_ENTRY_C);
     }
 
     /**
+     * Create VariablesBuilder based on converters given.
+     *
      * @param paramEntryConv  will be used to do the Param-to-Value mapping. See {@link ParamsEntryConverter}
      * @param paramsConverter aggregate function for the all Param.
      *                        Makes the {@link DSList#getParameters()} to return the Params
      * @param <Param>         used in the {@link VarsEntryConverter}
      * @param <Params>        type of the {@link DSList#getParameters()}
-     * @return
+     * @return new VariablesBuilder object based on suppliers of these converters.
      */
-    public <Param, Params> VariablesBuilder<Param, Params> customParams(@Nonnull final ParamsEntryConverter<Param> paramEntryConv,
-                                                                        @Nonnull final Function<Iterator<Param>, Params> paramsConverter) {
+    public <Param, Params> VariablesBuilder<Param, Params> customParams(
+            @Nonnull final ParamsEntryConverter<Param> paramEntryConv,
+            @Nonnull final Function<Iterator<Param>, Params> paramsConverter) {
         return customParams(() -> paramEntryConv, () -> paramsConverter);
     }
 
     /**
-     * same as {@link #customParams(ParamsEntryConverter, Function)}
-     * but with stateful converters
+     * The same as {@link #customParams(ParamsEntryConverter, Function)} but with stateful converters.
+     *
+     * @param paramEntryConv Supplier of ParamsEntryConverters
+     * @param paramsConverter Supplier of Functions
+     * @return new VariablesBuilder object based on these suppliers.
      */
-    public <Param, Params> VariablesBuilder<Param, Params> customParams(@Nonnull final Supplier<ParamsEntryConverter<Param>> paramEntryConv,
-                                                                        @Nonnull final Supplier<Function<Iterator<Param>, Params>> paramsConverter) {
+    public <Param, Params> VariablesBuilder<Param, Params> customParams(
+            @Nonnull final Supplier<ParamsEntryConverter<Param>> paramEntryConv,
+            @Nonnull final Supplier<Function<Iterator<Param>, Params>> paramsConverter) {
         return new VariablesBuilder<>(this, paramEntryConv, paramsConverter);
     }
 }

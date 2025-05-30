@@ -25,32 +25,74 @@ import javax.annotation.Nullable;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
-
-import com.google.common.collect.Lists;
 import org.qubership.automation.configuration.dataset.excel.builder.config.BaseConfig;
 import org.qubership.automation.configuration.dataset.excel.core.Consumer;
 import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 
+import com.google.common.collect.Lists;
+
 public class DSFormer<Param, Params, Var, Vars> extends AbstractDSFormer<Param, Params, Var, Vars> {
 
+    /**
+     * Constant for Parameter Column Name.
+     */
     private static final String PARAMETER_COL_NAME = "Parameter";
+
+    /**
+     * Constant for Entity Column Name.
+     */
     private static final String ENTITY_COL_NAME = "Entity";
 
+    /**
+     * Cells Predicate for entity.
+     */
     private final Predicate<Cell> entityPred;
+
+    /**
+     * Cells Predicate for parameter.
+     */
     private final Predicate<Cell> paramsPred;
+
+    /**
+     * Parameter Entry Converter object.
+     */
     private final ParamsEntryConverter<Param> paramsEntryConverter;
+
+    /**
+     * Vars Entry Converter object.
+     */
     private final VarsEntryConverter<Param, Var> varsEntryConverter;
 
+    /**
+     * Current DSCell entity.
+     */
     private DSCell curEntity;
+
+    /**
+     * Current DSCell parameter.
+     */
     private DSCell curParam;
+
+    /**
+     * Converted parameter.
+     */
     private Param convertedParam;
 
-    public DSFormer(@Nonnull Sheet sheet,
-                    @Nonnull BaseConfig<Param, Params, Var, Vars> settings,
-                    @Nonnull ParamsEntryConverter<Param> paramsEntryConverter,
-                    @Nonnull VarsEntryConverter<Param, Var> varsEntryConverter,
-                    @Nonnull EvaluationContext evaluationContext) {
+    /**
+     * Constructor.
+     *
+     * @param sheet Sheet object
+     * @param settings Base Config object
+     * @param paramsEntryConverter ParamsEntryConverter object
+     * @param varsEntryConverter VarsEntryConverter object
+     * @param evaluationContext EvaluationContext object.
+     */
+    public DSFormer(@Nonnull final Sheet sheet,
+                    @Nonnull final BaseConfig<Param, Params, Var, Vars> settings,
+                    @Nonnull final ParamsEntryConverter<Param> paramsEntryConverter,
+                    @Nonnull final VarsEntryConverter<Param, Var> varsEntryConverter,
+                    @Nonnull final EvaluationContext evaluationContext) {
         super(sheet, settings, evaluationContext);
         this.paramsEntryConverter = paramsEntryConverter;
         this.varsEntryConverter = varsEntryConverter;
@@ -58,14 +100,26 @@ public class DSFormer<Param, Params, Var, Vars> extends AbstractDSFormer<Param, 
         paramsPred = Utils.statefulHeaderPredicate(evaluationContext, PARAMETER_COL_NAME);
     }
 
+    /**
+     * Get mandatory columns list.
+     *
+     * @return List of Cell Predicates.
+     */
     @Nullable
     protected List<Predicate<Cell>> getMandatoryColumns() {
         return Lists.newArrayList(entityPred, paramsPred);
     }
 
+    /**
+     * Get Handler.
+     *
+     * @param headerCell Cell of column header
+     * @param predicate  Predicate of Cells
+     * @return Cell Consumer object.
+     */
     @Nullable
     @Override
-    public Consumer<Cell> getHandler(@Nonnull Cell headerCell, @Nonnull Predicate<Cell> predicate) {
+    public Consumer<Cell> getHandler(@Nonnull final Cell headerCell, @Nonnull final Predicate<Cell> predicate) {
         if (predicate.equals(entityPred)) {
             return input -> {
                 DSCell entity = new DSCell(input, evaluationContext);
@@ -85,25 +139,38 @@ public class DSFormer<Param, Params, Var, Vars> extends AbstractDSFormer<Param, 
         }
     }
 
+    /**
+     * Go to the next row.
+     */
     @Override
     protected void nextRow() {
-        //IT need for NITP-4060, NITP-4080
         curParam = null;
         convertedParam = null;
     }
 
-    protected void pushToDS(@Nonnull DSImpl<Param, Var, Vars> ds, @Nonnull Cell input) {
-        if (convertedParam != null)//for case when convertedParam has been filtered
-        {
+    /**
+     * Push Cell input to ds Dataset.
+     *
+     * @param ds DSImpl object
+     * @param input Cell to add.
+     */
+    protected void pushToDS(@Nonnull final DSImpl<Param, Var, Vars> ds, @Nonnull final Cell input) {
+        if (convertedParam != null) {
+            // for case when convertedParam has been filtered
             ds.accept(new VarsConvInfo<>(curEntity, curParam, convertedParam, input));
         }
     }
 
-    protected void pushToDSList(@Nonnull Cell input) {
+    /**
+     * Push Cell input to DatasetList.
+     *
+     * @param input Cell to add.
+     */
+    protected void pushToDSList(@Nonnull final Cell input) {
         curParam = new DSCell(input, evaluationContext);
         convertedParam = paramsEntryConverter.doParamsEntry(curEntity, new DSCell(input, evaluationContext));
-        if (convertedParam != null)//for case when convertedParam has been filtered
-        {
+        if (convertedParam != null) {
+            // for case when convertedParam has been filtered
             pushToDSList(convertedParam);
         }
     }

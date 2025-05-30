@@ -19,5 +19,10 @@ package org.qubership.automation.configuration.dataset.excel.core;
 
 public interface Consumer<T> {
 
+    /**
+     * Make some parameter processing.
+     *
+     * @param t object to process.
+     */
     void accept(T t);
 }

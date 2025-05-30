@@ -17,21 +17,27 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
-import org.qubership.automation.configuration.dataset.excel.core.ColumnHandler;
-import org.qubership.automation.configuration.dataset.excel.core.Consumer;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.poi.ss.usermodel.Cell;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.poi.ss.usermodel.Cell;
+import org.qubership.automation.configuration.dataset.excel.core.ColumnHandler;
+import org.qubership.automation.configuration.dataset.excel.core.Consumer;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.PeekingIterator;
 
 /**
  * <pre>
@@ -56,62 +62,136 @@ import java.util.function.Predicate;
  */
 public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
 
+    /**
+     * Default empty strategy of cells processing.
+     */
     private static final Function<Iterator<Cell>, Iterator<Cell>> DEFAULT_EMPTY_STRATEGY
             = new Function<Iterator<Cell>, Iterator<Cell>>() {
         @Nullable
         @Override
-        public Iterator<Cell> apply(@Nullable Iterator<Cell> input) {
+        public Iterator<Cell> apply(@Nullable final Iterator<Cell> input) {
             return Collections.emptyIterator();
         }
     };
 
+    /**
+     * Cell Predicates Deque object.
+     */
     protected final Deque<Predicate<Cell>> predicates;
+
+    /**
+     * ColumnHandler object.
+     */
     protected ColumnHandler cbProvider;
+
+    /**
+     * Strategy of cells processing.
+     */
     protected Function<Iterator<Cell>, Iterator<Cell>> currentStrategy = new MemorizeStrategy(this);
+
+    /**
+     * Flag if processing is started already.
+     */
     protected boolean isStarted = false;
 
+    /**
+     * Constructor.
+     */
     public ColumnsMemory() {
         predicates = Lists.newLinkedList();
     }
 
-    public void addPredicates(@Nonnull Iterable<Predicate<Cell>> predicates) {
+    /**
+     * Add predicates to this.predicates.
+     *
+     * @param predicates Iterable of Predicates to add.
+     */
+    public void addPredicates(@Nonnull final Iterable<Predicate<Cell>> predicates) {
         addPredicates(predicates.iterator());
     }
 
-    public void addPredicates(@Nonnull Iterator<Predicate<Cell>> predicates) {
+    /**
+     * Add predicates to this.predicates.
+     *
+     * @param predicates Iterable of Predicates to add.
+     */
+    public void addPredicates(@Nonnull final Iterator<Predicate<Cell>> predicates) {
         Preconditions.checkState(!isStarted, "It is already started, this operation does nothing");
         Iterators.addAll(this.predicates, predicates);
     }
 
+    /**
+     * Get predicates.
+     *
+     * @return Deque of Cell Predicates object.
+     */
     @Nonnull
     public Deque<Predicate<Cell>> getPredicates() {
         return predicates;
     }
 
-    public void setCBProvider(@Nonnull ColumnHandler cbProvider) {
+    /**
+     * Set cbProvider.
+     *
+     * @param cbProvider ColumnHandler object.
+     */
+    public void setCBProvider(@Nonnull final ColumnHandler cbProvider) {
         Preconditions.checkState(!isStarted, "It is already started, this operation does nothing");
         this.cbProvider = cbProvider;
     }
 
+    /**
+     * Apply the currentStrategy to input parameter.
+     *
+     * @param input the function argument
+     * @return Cells Iterator object.
+     */
     @Nullable
     @Override
-    public Iterator<Cell> apply(@Nullable Iterator<Cell> input) {
+    public Iterator<Cell> apply(@Nullable final Iterator<Cell> input) {
         return currentStrategy.apply(input);
     }
 
     private static class CallBackBoundary implements Comparable<CallBackBoundary> {
+
+        /**
+         * Cell Predicate object.
+         */
         protected final Predicate<Cell> selector;
+
+        /**
+         * Index of cell.
+         */
         protected final int cellIndex;
+
+        /**
+         * Cell Consumer object.
+         */
         protected final Consumer<Cell> cbHandler;
 
-        protected CallBackBoundary(@Nonnull Predicate<Cell> selector, int cellIndex, @Nonnull Consumer<Cell> cbHandler) {
+        /**
+         * Constructor.
+         *
+         * @param selector Cell Predicate object
+         * @param cellIndex Index of cell
+         * @param cbHandler Cell Consumer object.
+         */
+        protected CallBackBoundary(@Nonnull final Predicate<Cell> selector,
+                                   final int cellIndex,
+                                   @Nonnull final Consumer<Cell> cbHandler) {
             this.selector = selector;
             this.cellIndex = cellIndex;
             this.cbHandler = cbHandler;
         }
 
+        /**
+         * Compare this object to the parameter given.
+         *
+         * @param o the object to be compared.
+         * @return int result of comparison.
+         */
         @Override
-        public int compareTo(@Nonnull CallBackBoundary o) {
+        public int compareTo(@Nonnull final CallBackBoundary o) {
             return ComparisonChain.start()
                     .compare(this.cellIndex, o.cellIndex)
                     .result();
@@ -128,14 +208,27 @@ public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
      * </pre>
      */
     private static class MemorizeStrategy implements Function<Iterator<Cell>, Iterator<Cell>> {
+
+        /**
+         * ColumnsMemory object.
+         */
         private final ColumnsMemory memory;
+
+        /**
+         * List of CallBackBoundary objects.
+         */
         private List<CallBackBoundary> cbs;
 
-
-        private MemorizeStrategy(@Nonnull ColumnsMemory memory) {
+        private MemorizeStrategy(@Nonnull final ColumnsMemory memory) {
             this.memory = memory;
         }
 
+        /**
+         * Apply strategy to input parameter.
+         *
+         * @param input the function argument
+         * @return Cells Iterator result.
+         */
         @Nonnull
         @Override
         public Iterator<Cell> apply(final Iterator<Cell> input) {
@@ -145,8 +238,9 @@ public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
                 protected Cell computeNext() {
                     while (input.hasNext()) {
                         final Cell cell = input.next();
-                        if (tryRegisterCallback(cell))
+                        if (tryRegisterCallback(cell)) {
                             return cell;
+                        }
                     }
                     memory.currentStrategy = getNextStrat();
                     return endOfData();
@@ -157,35 +251,41 @@ public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
         @Nonnull
         private ColumnHandler getCBProvider() {
             if (!memory.isStarted) {
-                Preconditions.checkNotNull(memory.cbProvider, "You should set the callbacks provider to lazy init the [%s]", memory);
+                Preconditions.checkNotNull(memory.cbProvider,
+                        "You should set the callbacks provider to lazy init the [%s]", memory);
                 memory.isStarted = true;
             }
             return memory.cbProvider;
         }
 
-        private boolean tryRegisterCallback(@Nonnull Cell cell, @Nonnull Predicate<Cell> matchedPredicate) {
+        private boolean tryRegisterCallback(@Nonnull final Cell cell,
+                                            @Nonnull final Predicate<Cell> matchedPredicate) {
             Consumer<Cell> callBack = getCBProvider().getHandler(cell, matchedPredicate);
-            if (callBack == null)
+            if (callBack == null) {
                 return false;
+            }
             CallBackBoundary boundary = new CallBackBoundary(matchedPredicate, cell.getColumnIndex(), callBack);
-            if (cbs == null)
+            if (cbs == null) {
                 cbs = Lists.newArrayList();
+            }
             cbs.add(boundary);
             return true;
         }
 
-        private boolean tryRegisterCallback(@Nonnull Cell cell) {
+        private boolean tryRegisterCallback(@Nonnull final Cell cell) {
             for (Predicate<Cell> pred : memory.predicates) {
-                if (pred.test(cell) && tryRegisterCallback(cell, pred))
+                if (pred.test(cell) && tryRegisterCallback(cell, pred)) {
                     return true;
+                }
             }
             return false;
         }
 
         @Nonnull
         private Function<Iterator<Cell>, Iterator<Cell>> getNextStrat() {
-            if (cbs == null)
+            if (cbs == null) {
                 return DEFAULT_EMPTY_STRATEGY;
+            }
             Collections.sort(cbs);
             return new RegularStrategy(cbs);
         }
@@ -199,17 +299,27 @@ public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
      * </pre>
      */
     private static class RegularStrategy implements Function<Iterator<Cell>, Iterator<Cell>> {
+        /**
+         * List of CallBackBoundary objects.
+         */
         private final List<CallBackBoundary> initedSortedCbs;
 
-        private RegularStrategy(@Nonnull List<CallBackBoundary> initedSortedCbs) {
+        private RegularStrategy(@Nonnull final List<CallBackBoundary> initedSortedCbs) {
             this.initedSortedCbs = initedSortedCbs;
         }
 
+        /**
+         * Apply strategy to input parameter.
+         *
+         * @param input the function argument
+         * @return Cells Iterator result.
+         */
         @Nonnull
         @Override
         public Iterator<Cell> apply(final Iterator<Cell> input) {
             return new AbstractIterator<Cell>() {
-                private final PeekingIterator<CallBackBoundary> boundPeek = Iterators.peekingIterator(initedSortedCbs.iterator());
+                private final PeekingIterator<CallBackBoundary> boundPeek
+                        = Iterators.peekingIterator(initedSortedCbs.iterator());
                 private final PeekingIterator<Cell> inputPeek = Iterators.peekingIterator(input);
 
                 @Override

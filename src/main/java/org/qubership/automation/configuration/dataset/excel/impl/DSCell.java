@@ -17,18 +17,31 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.qubership.automation.configuration.dataset.excel.core.DS;
-import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
-import org.apache.poi.ss.usermodel.Cell;
-
 import javax.annotation.Nonnull;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.qubership.automation.configuration.dataset.excel.core.DS;
+import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
+
 public class DSCell {
+
+    /**
+     * EvaluationContext object.
+     */
     private final EvaluationContext evaluator;
+
+    /**
+     * Cell object.
+     */
     private final Cell cell;
 
-    public DSCell(@Nonnull Cell cell, @Nonnull EvaluationContext evaluator) {
+    /**
+     * Constructor.
+     *
+     * @param cell Cell object
+     * @param evaluator EvaluationContext object.
+     */
+    public DSCell(@Nonnull final Cell cell, @Nonnull final EvaluationContext evaluator) {
         this.cell = cell;
         this.evaluator = evaluator;
     }
@@ -60,13 +73,23 @@ public class DSCell {
         return getValue().toString();
     }
 
+    /**
+     * Get cell.
+     *
+     * @return Cell object.
+     */
     @Nonnull
-    public Cell getCell(){
+    public Cell getCell() {
         return cell;
     }
 
+    /**
+     * Get evaluator.
+     *
+     * @return EvaluationContext object.
+     */
     @Nonnull
-    public EvaluationContext getEvaluator(){
+    public EvaluationContext getEvaluator() {
         return evaluator;
     }
 
