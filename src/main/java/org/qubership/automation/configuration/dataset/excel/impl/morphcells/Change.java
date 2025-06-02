@@ -17,21 +17,41 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl.morphcells;
 
-import org.apache.poi.ss.usermodel.Cell;
-
 import javax.annotation.Nonnull;
 
+import org.apache.poi.ss.usermodel.Cell;
+
 public abstract class Change {
+
+    /**
+     * Cell object (target of the change).
+     */
     private final Cell cell;
 
-    public Change(@Nonnull Cell cell) {
+    /**
+     * Constructor.
+     *
+     * @param cell Cell object.
+     */
+    public Change(@Nonnull final Cell cell) {
         this.cell = cell;
     }
 
+    /**
+     * Apply the change.
+     */
     public abstract void apply();
 
+    /**
+     * Revert the change.
+     */
     public abstract void revert();
 
+    /**
+     * Get Cell target of the Change.
+     *
+     * @return cell.
+     */
     @Nonnull
     public Cell getTarget() {
         return cell;

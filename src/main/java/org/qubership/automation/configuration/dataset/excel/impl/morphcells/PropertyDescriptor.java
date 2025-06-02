@@ -17,25 +17,52 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl.morphcells;
 
-import org.qubership.automation.configuration.dataset.excel.impl.Utils;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.util.LocaleUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.FormulaError;
+import org.apache.poi.util.LocaleUtil;
+import org.qubership.automation.configuration.dataset.excel.impl.Utils;
+
 public abstract class PropertyDescriptor<T> {
 
+    /**
+     * Data Formatter for Locale.US.
+     */
     private static final DataFormatter FORMATTER = new DataFormatter(Locale.US);
+
+    /**
+     * Date Formatter for "yyyy-MM-dd HH:mm:ss" pattern and Locale.US.
+     */
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-    protected static Supplier<Numeric> NUMERIC_WIN = Utils.memoize(() -> new Numeric(false, FORMATTER, DATE_FORMAT));
-    protected static Supplier<Numeric> NUMERIC_MAC = Utils.memoize(() -> new Numeric(true, FORMATTER, DATE_FORMAT));
+
+    /**
+     * Numeric Supplier for Windows.
+     */
+    protected static Supplier<Numeric> NUMERIC_WIN = Utils.memoize(
+            () -> new Numeric(false, FORMATTER, DATE_FORMAT));
+
+    /**
+     * Numeric Supplier for MacOs.
+     */
+    protected static Supplier<Numeric> NUMERIC_MAC = Utils.memoize(
+            () -> new Numeric(true, FORMATTER, DATE_FORMAT));
+
+    /**
+     * Property Descriptor for String.
+     */
     protected static PropertyDescriptor<String> STRING = new PropertyDescriptor<String>(String.class) {
+
         @Override
         public int cellType() {
             return CellType.STRING.getCode();
@@ -43,28 +70,33 @@ public abstract class PropertyDescriptor<T> {
 
         @Nonnull
         @Override
-        public String fromString(@Nonnull String str, @Nonnull Cell cell) {
+        public String fromString(@Nonnull final String str, @Nonnull final Cell cell) {
             return str;
         }
 
         @Nonnull
         @Override
-        public String toString(@Nonnull String value, @Nonnull Cell cell) {
+        public String toString(@Nonnull final String value, @Nonnull final Cell cell) {
             return value;
         }
 
         @Nonnull
         @Override
-        public String getValue(@Nonnull Cell cell) {
+        public String getValue(@Nonnull final Cell cell) {
             return cell.getStringCellValue();
         }
 
         @Override
-        public void setValue(@Nonnull Cell cell, @Nonnull String value) {
+        public void setValue(@Nonnull final Cell cell, @Nonnull final String value) {
             cell.setCellValue(value);
         }
     };
+
+    /**
+     * Property Descriptor for Formula.
+     */
     protected static PropertyDescriptor<String> FORMULA = new PropertyDescriptor<String>(String.class) {
+
         @Override
         public int cellType() {
             return CellType.FORMULA.getCode();
@@ -72,28 +104,33 @@ public abstract class PropertyDescriptor<T> {
 
         @Nonnull
         @Override
-        public String fromString(@Nonnull String str, @Nonnull Cell cell) {
+        public String fromString(@Nonnull final String str, @Nonnull final Cell cell) {
             return str;
         }
 
         @Nonnull
         @Override
-        public String toString(@Nonnull String value, @Nonnull Cell cell) {
+        public String toString(@Nonnull final String value, @Nonnull final Cell cell) {
             return value;
         }
 
         @Nonnull
         @Override
-        public String getValue(@Nonnull Cell cell) {
+        public String getValue(@Nonnull final Cell cell) {
             return cell.getCellFormula();
         }
 
         @Override
-        public void setValue(@Nonnull Cell cell, @Nonnull String value) {
+        public void setValue(@Nonnull final Cell cell, @Nonnull final String value) {
             cell.setCellFormula(value);
         }
     };
+
+    /**
+     * Property Descriptor for Boolean.
+     */
     protected static PropertyDescriptor<Boolean> BOOLEAN = new PropertyDescriptor<Boolean>(Boolean.class) {
+
         @Override
         public int cellType() {
             return CellType.BOOLEAN.getCode();
@@ -101,28 +138,33 @@ public abstract class PropertyDescriptor<T> {
 
         @Nonnull
         @Override
-        public Boolean fromString(@Nonnull String str, @Nonnull Cell cell) {
+        public Boolean fromString(@Nonnull final String str, @Nonnull final Cell cell) {
             return Boolean.valueOf(str);
         }
 
         @Nonnull
         @Override
-        public String toString(@Nonnull Boolean value, @Nonnull Cell cell) {
+        public String toString(@Nonnull final Boolean value, @Nonnull final Cell cell) {
             return value.toString();
         }
 
         @Nonnull
         @Override
-        public Boolean getValue(@Nonnull Cell cell) {
+        public Boolean getValue(@Nonnull final Cell cell) {
             return cell.getBooleanCellValue();
         }
 
         @Override
-        public void setValue(@Nonnull Cell cell, @Nonnull Boolean value) {
+        public void setValue(@Nonnull final Cell cell, @Nonnull final Boolean value) {
             cell.setCellValue(value);
         }
     };
+
+    /**
+     * Property Descriptor for Errors.
+     */
     protected static PropertyDescriptor<Byte> ERROR = new PropertyDescriptor<Byte>(Byte.class) {
+
         @Override
         public int cellType() {
             return CellType.ERROR.getCode();
@@ -130,51 +172,96 @@ public abstract class PropertyDescriptor<T> {
 
         @Nonnull
         @Override
-        public Byte fromString(@Nonnull String str, @Nonnull Cell cell) {
+        public Byte fromString(@Nonnull final String str, @Nonnull final Cell cell) {
             return FormulaError.forString(str).getCode();
         }
 
         @Nonnull
         @Override
-        public String toString(@Nonnull Byte value, @Nonnull Cell cell) {
+        public String toString(@Nonnull final Byte value, @Nonnull final Cell cell) {
             return FormulaError.forInt(value).getString();
         }
 
         @Nonnull
         @Override
-        public Byte getValue(@Nonnull Cell cell) {
+        public Byte getValue(@Nonnull final Cell cell) {
             return cell.getErrorCellValue();
         }
 
         @Override
-        public void setValue(@Nonnull Cell cell, @Nonnull Byte value) {
+        public void setValue(@Nonnull final Cell cell, @Nonnull final Byte value) {
             cell.setCellErrorValue(value);
         }
     };
+
+    /**
+     * Class of the object.
+     */
     private final Class<T> type;
 
-    public PropertyDescriptor(@Nonnull Class<T> type) {
+    /**
+     * Constructor.
+     *
+     * @param type Class of the object.
+     */
+    public PropertyDescriptor(@Nonnull final Class<T> type) {
         //only for extending
         this.type = type;
     }
 
+    /**
+     * Get cell type.
+     *
+     * @return int cell type value.
+     */
     public abstract int cellType();
 
-    @Nonnull
-    public abstract T fromString(@Nonnull String str, @Nonnull Cell cell);
-
     /**
-     * see {@link DataFormatter#formatCellValue(org.apache.poi.ss.usermodel.Cell, org.apache.poi.ss.usermodel.FormulaEvaluator)}
+     * Make Cell value from String.
+     *
+     * @param str String value
+     * @param cell Cell object
+     * @return T class value of the cell.
      */
     @Nonnull
-    public abstract String toString(@Nonnull T value, @Nonnull Cell cell);
+    public abstract T fromString(@Nonnull final String str, @Nonnull final Cell cell);
 
+    /**
+     * Make String representation of the value,
+     * see {@link DataFormatter#formatCellValue(org.apache.poi.ss.usermodel.Cell,
+     * org.apache.poi.ss.usermodel.FormulaEvaluator)}.
+     *
+     * @param value T-class value
+     * @param cell Cell object
+     * @return String representation.
+     */
     @Nonnull
-    public abstract T getValue(@Nonnull Cell cell);
+    public abstract String toString(@Nonnull final T value, @Nonnull final Cell cell);
 
-    public abstract void setValue(@Nonnull Cell cell, @Nonnull T value);
+    /**
+     * Get value.
+     *
+     * @param cell Cell object
+     * @return T-class value.
+     */
+    @Nonnull
+    public abstract T getValue(@Nonnull final Cell cell);
 
-    public void setFromString(@Nonnull Cell cell, @Nullable String value) {
+    /**
+     * Set value.
+     *
+     * @param cell Cell object
+     * @param value T-class value to set.
+     */
+    public abstract void setValue(@Nonnull final Cell cell, @Nonnull final T value);
+
+    /**
+     * Set cell value from String.
+     *
+     * @param cell Cell object
+     * @param value String value to set.
+     */
+    public void setFromString(@Nonnull final Cell cell, @Nullable final String value) {
         if (value == null) {
             cell.setCellValue((String) null);
         } else {
@@ -182,25 +269,45 @@ public abstract class PropertyDescriptor<T> {
         }
     }
 
+    /**
+     * Get String representation of the cell value.
+     *
+     * @param cell Cell object
+     * @return String result.
+     */
     @Nullable
-    public String getToString(@Nonnull Cell cell) {
-        if (cell.getCellType() == CellType.BLANK)
-            return null;
-        return toString(getValue(cell), cell);
+    public String getToString(@Nonnull final Cell cell) {
+        return cell.getCellType() == CellType.BLANK ? null : toString(getValue(cell), cell);
     }
 
+    /**
+     * Get value type.
+     *
+     * @return Class this.type.
+     */
     @Nonnull
     public Class<T> getValueType() {
         return this.type;
     }
 
+    /**
+     * Make String representation of the object.
+     *
+     * @return String representation of the object.
+     */
     @Override
     public String toString() {
         return String.format("[%s] for CellType[%s] with [%s] value", this.getClass().getName(), cellType(), type);
     }
 
+    /**
+     * Get proxy of the cell.
+     *
+     * @param cell Cell object
+     * @return UniTypeCell object.
+     */
     @Nonnull
-    public UniTypeCell<T> proxy(@Nonnull Cell cell) {
+    public UniTypeCell<T> proxy(@Nonnull final Cell cell) {
         return new UniTypeCell<>(this, cell);
     }
 
@@ -214,24 +321,44 @@ public abstract class PropertyDescriptor<T> {
         private final DataFormatter formatter;
         private final SimpleDateFormat dformat;
 
-        public Numeric(boolean isStartDate1904, @Nonnull DataFormatter formatter, @Nonnull SimpleDateFormat dformat) {
+        /**
+         * Constructor.
+         *
+         * @param isStartDate1904 flag if date starts at 1904 or not
+         * @param formatter DataFormatter object
+         * @param dformat SimpleDateFormat object.
+         */
+        public Numeric(final boolean isStartDate1904,
+                       @Nonnull final DataFormatter formatter,
+                       @Nonnull final SimpleDateFormat dformat) {
             super(Double.class);
             this.isStartDate1904 = isStartDate1904;
             this.formatter = formatter;
-            this.dformat = (SimpleDateFormat) dformat.clone();//to be able to manipulate timezones
+            this.dformat = (SimpleDateFormat) dformat.clone(); // to be able to manipulate timezones
         }
 
+        /**
+         * Get cell type integer.
+         *
+         * @return int code of CellType.NUMERIC.
+         */
         @Override
         public int cellType() {
             return CellType.NUMERIC.getCode();
         }
 
+        /**
+         * Make Cell value from String.
+         *
+         * @param str String value
+         * @param cell Cell object
+         * @return Double value of the cell.
+         */
         @Nonnull
         @Override
-        public Double fromString(@Nonnull String str, @Nonnull Cell cell) {
+        public Double fromString(@Nonnull final String str, @Nonnull final Cell cell) {
             if (DateUtil.isCellDateFormatted(cell)) {
                 //str must be a date
-                Date date;
                 try {
                     dformat.setTimeZone(LocaleUtil.getUserTimeZone());
                     return DateUtil.getExcelDate(dformat.parse(str), isStartDate1904);
@@ -245,23 +372,42 @@ public abstract class PropertyDescriptor<T> {
 
         }
 
+        /**
+         * Make String representation of the value.
+         *
+         * @param value Double value
+         * @param cell Cell object
+         * @return String representation.
+         */
         @Nonnull
         @Override
-        public String toString(@Nonnull Double value, @Nonnull Cell cell) {
+        public String toString(@Nonnull final Double value, @Nonnull final Cell cell) {
             CellStyle style = cell.getCellStyle();
             short df = style.getDataFormat();
             String dfs = style.getDataFormatString();
             return formatter.formatRawCellContents(value, df, dfs, isStartDate1904);
         }
 
+        /**
+         * Get value.
+         *
+         * @param cell Cell object
+         * @return Double value.
+         */
         @Nonnull
         @Override
-        public Double getValue(@Nonnull Cell cell) {
+        public Double getValue(@Nonnull final Cell cell) {
             return cell.getNumericCellValue();
         }
 
+        /**
+         * Set value.
+         *
+         * @param cell Cell object
+         * @param value Double value.
+         */
         @Override
-        public void setValue(@Nonnull Cell cell, @Nonnull Double value) {
+        public void setValue(@Nonnull final Cell cell, @Nonnull final Double value) {
             cell.setCellValue(value);
         }
     }

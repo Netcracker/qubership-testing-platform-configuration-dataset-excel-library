@@ -62,7 +62,7 @@ public class ParamsBuilder {
      * @return VariablesBuilder object.
      */
     public VariablesBuilder<String, List<String>> listOfStringsParams() {
-        return listParams(Utils.STRING_PAR_ENTRY_C);
+        return listParams(Utils.STRING_PARAMS_ENTRY_CONVERTER);
     }
 
     /**

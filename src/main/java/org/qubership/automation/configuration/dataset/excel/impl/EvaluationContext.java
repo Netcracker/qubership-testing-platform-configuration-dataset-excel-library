@@ -35,37 +35,83 @@ import com.google.common.util.concurrent.Runnables;
 
 public class EvaluationContext {
 
+    /**
+     * Workbook object.
+     */
     private final Workbook wb;
+
+    /**
+     * Runnable to perform context cleanup.
+     */
     private final Runnable cleanup;
+
+    /**
+     * PropertyDescriptors object.
+     */
     private final PropertyDescriptors descriptors;
+
+    /**
+     * Strategy of formulas re-evaluation.
+     */
     private final ReevaluateFormulas strategy;
+
+    /**
+     * Flag if the context is evaluated or not.
+     */
     private volatile boolean initialized;
+
+    /**
+     * Formula Evaluator object.
+     */
     private FormulaEvaluator eval;
 
 
-    public EvaluationContext(@Nonnull Workbook wb, @Nonnull ReevaluateFormulas strategy) {
+    /**
+     * Constructor.
+     *
+     * @param wb Workbook object
+     * @param strategy Strategy of formulas re-evaluation.
+     */
+    public EvaluationContext(@Nonnull final Workbook wb, @Nonnull final ReevaluateFormulas strategy) {
         this.wb = wb;
         this.strategy = strategy;
-        this.cleanup=cleanupRunnable(strategy.evaluationContextCleanup,this);
+        this.cleanup = cleanupRunnable(strategy.evaluationContextCleanup,this);
         this.descriptors = PropertyDescriptors.get(wb);
     }
 
-    public static Runnable cleanupRunnable(boolean doCleanup,
-                                                @Nonnull final EvaluationContext evaluator) {
-        if (doCleanup) {
-            return EvaluationContext.cleanupRunnable(evaluator);
-        } else {
-            return Runnables.doNothing();
-        }
+    /**
+     * Make Runnable to perform context cleanup if doCleanup = true, otherwise do nothing.
+     *
+     * @param doCleanup boolean flag to perform cleanup actually (if true) or not
+     * @param evaluator EvaluationContext object to clean up
+     * @return Runnable to perform cleanup or do nothing, depending on doCleanup value.
+     */
+    public static Runnable cleanupRunnable(final boolean doCleanup,
+                                           @Nonnull final EvaluationContext evaluator) {
+        return doCleanup ? EvaluationContext.cleanupRunnable(evaluator) : Runnables.doNothing();
     }
 
+    /**
+     * Runnable to perform evaluation context cleanup.
+     *
+     * @param eval EvaluationContext object to clean up
+     * @return Runnable object.
+     */
     public static Runnable cleanupRunnable(@Nonnull final EvaluationContext eval) {
         return new Runnable() {
+            /**
+             * Run this runnable object.
+             */
             @Override
             public void run() {
                 eval.clearFormulasCache();
             }
 
+            /**
+             * Make String representation of the object.
+             *
+             * @return String representation of the object.
+             */
             @Override
             public String toString() {
                 return "clearFormulasCache() invoke";
@@ -73,12 +119,19 @@ public class EvaluationContext {
         };
     }
 
+    /**
+     * Get Cell value.
+     *
+     * @param cell Cell object
+     * @return Object value of Cell; in case Cell Type is CellType#FORMULA - evaluate the formula firstly,
+     * and return String representation of the result.
+     */
     @Nonnull
     public Object getCellValue(@Nonnull final Cell cell) {
         synchronized (cell) {
             CellType cellType = cell.getCellType();
-            if (cellType == CellType.FORMULA) //for lazy invoke on supplier
-            {
+            if (cellType == CellType.FORMULA) {
+                //for lazy invoke on supplier
                 return new Object() {
                     @Override
                     public String toString() {
@@ -94,8 +147,13 @@ public class EvaluationContext {
         }
     }
 
+    /**
+     * Get Formula Evaluator; create it if not initialized yet.
+     *
+     * @return FormulaEvaluator eval object.
+     */
     public FormulaEvaluator evaluator() {
-        // A 2-field variant of Double Checked Locking.
+        // A 2-field variant of Double-checked Locking.
         if (!initialized) {
             synchronized (this) {
                 if (!initialized) {
@@ -108,15 +166,25 @@ public class EvaluationContext {
         return eval;
     }
 
+    /**
+     * Clear formulas cache.
+     */
     public void clearFormulasCache() {
-        if (!initialized)
+        if (!initialized) {
             return;
+        }
         synchronized (this) {
             eval.clearAllCachedResultValues();
         }
     }
 
-    public <V> V doThreadSafeUnchecked(@Nonnull Callable<V> callable) {
+    /**
+     * Execute callable synchronized for wb Workbook.
+     *
+     * @param callable Callable object to execute
+     * @return &lt;V&gt; object.
+     */
+    public <V> V doThreadSafeUnchecked(@Nonnull final Callable<V> callable) {
         synchronized (wb) {
             try {
                 return callable.call();
@@ -127,13 +195,25 @@ public class EvaluationContext {
         }
     }
 
-    public <V> V doThreadSafe(@Nonnull Callable<V> callable) throws Exception {
+    /**
+     * Execute callable thread-safe way (synchronized for wb Workbook).
+     *
+     * @param callable Callable object to execute
+     * @return &lt;V&gt; object
+     * @throws Exception in case execution errors occurred.
+     */
+    public <V> V doThreadSafe(@Nonnull final Callable<V> callable) throws Exception {
         synchronized (wb) {
             return callable.call();
         }
     }
 
-    public void doThreadSafe(@Nonnull Runnable runnable) {
+    /**
+     * Execute runnable thread-safe way (synchronized for wb Workbook).
+     *
+     * @param runnable Runnable object to execute.
+     */
+    public void doThreadSafe(@Nonnull final Runnable runnable) {
         synchronized (wb) {
             runnable.run();
         }
@@ -143,21 +223,32 @@ public class EvaluationContext {
         try {
             return evaluator().evaluateFormulaCell(cell);
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Can not evaluate formula in cell [%s] on sheet [%s]", cell.getAddress(), cell.getSheet().getSheetName()), e);
+            throw new RuntimeException(String.format("Can not evaluate formula in cell [%s] on sheet [%s]",
+                    cell.getAddress(), cell.getSheet().getSheetName()), e);
         }
     }
 
+    /**
+     * Get descriptors.
+     *
+     * @return PropertyDescriptors object.
+     */
     @Nonnull
     public PropertyDescriptors getDescriptors() {
         return descriptors;
     }
 
+    /**
+     * Get formula re-evaluation strategy.
+     *
+     * @return ReevaluateFormulas object.
+     */
     public ReevaluateFormulas getStrategy() {
         return strategy;
     }
 
     @Nonnull
-    private Object getCellValue(CellType cellType, @Nonnull final Cell cell) {
+    private Object getCellValue(final CellType cellType, @Nonnull final Cell cell) {
         switch (cellType) {
             case _NONE:
             case ERROR:

@@ -35,6 +35,8 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
+import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
+import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -43,28 +45,36 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
-import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 
 public class Utils {
 
-    public static final ParamsEntryConverter<String> STRING_PAR_ENTRY_C = new ParamsEntryConverter<String>() {
-        @Nullable
-        @Override
-        public String doParamsEntry(@Nullable DSCell entity, @Nonnull DSCell param) {
-            return doRegularParamName(entity == null ? null : entity.getStringValue(), param.getStringValue()).orElse(null);
-        }
-    };
-    private static final VarsEntryConverter<?, ? extends VarEntity<?>> DEFAULT_VAR_ENTRY_C = new VarsEntryConverter<Object, VarEntity<?>>() {
+    /**
+     * Constant converter to make regular name of a parameter.
+     */
+    public static final ParamsEntryConverter<String> STRING_PARAMS_ENTRY_CONVERTER = (entity, param)
+            -> doRegularParamName(entity == null ? null : entity.getStringValue(), param.getStringValue())
+            .orElse(null);
+
+    /**
+     * Default converter of values.
+     */
+    private static final VarsEntryConverter<?, ? extends VarEntity<?>> DEFAULT_VAR_ENTRY_CONVERTER
+            = new VarsEntryConverter<Object, VarEntity<?>>() {
         @Nonnull
         @Override
-        public VarEntity<Object> doVarsEntry(@Nullable DSCell entity, @Nonnull DSCell param, @Nonnull Object convertedParam, @Nonnull DSCell value) {
+        public VarEntity<Object> doVarsEntry(@Nullable final DSCell entity,
+                                             @Nonnull final DSCell param,
+                                             @Nonnull final Object convertedParam,
+                                             @Nonnull final DSCell value) {
             return new VarEntity<>(entity, param, convertedParam, value);
         }
     };
 
     /**
-     * designed to be stateless
+     * Header Predicate; designed to be stateless.
+     *
+     * @param accepted Iterable of Strings to check
+     * @return Predicate of DSCell.
      */
     @Nonnull
     public static Predicate<DSCell> statelessHeaderPredicate(@Nonnull final Iterable<String> accepted) {
@@ -72,9 +82,10 @@ public class Utils {
     }
 
     /**
-     * for cases when string value of cell doesn't matter
+     * Header Predicate; for cases when string value of cell doesn't matter.
      *
      * @param stateless should be stateless
+     * @return Predicate of DSCell.
      */
     @Nonnull
     public static Predicate<DSCell> statelessHeaderPredicate(@Nonnull final Predicate<Cell> stateless) {
@@ -82,41 +93,68 @@ public class Utils {
     }
 
     /**
-     * should be used when evaluator is acquired
-     * can not be reused with different workbook
+     * Header Predicate; should be used when evaluator is acquired. Can't be reused with different workbooks.
+     *
+     * @param wrapped Predicate of DSCell
+     * @param evaluator EvaluationContext object
+     * @return Predicate of Cell.
      */
     @Nonnull
-    public static Predicate<Cell> statefulHeaderPredicate(@Nonnull final Predicate<DSCell> wrapped, @Nonnull final EvaluationContext evaluator) {
+    public static Predicate<Cell> statefulHeaderPredicate(@Nonnull final Predicate<DSCell> wrapped,
+                                                          @Nonnull final EvaluationContext evaluator) {
         return cell -> wrapped.test(new DSCell(cell, evaluator));
     }
 
     /**
-     * should be used when evaluator is acquired
-     * can not be reused with different workbook
+     * Header Predicate; should be used when evaluator is acquired. Can't be reused with different workbooks.
+     *
+     * @param accepted Iterable of Strings
+     * @param evaluator EvaluationContext object
+     * @return Predicate of Cell.
      */
     @Nonnull
-    public static Predicate<Cell> statefulHeaderPredicate(@Nonnull final Iterable<String> accepted, @Nonnull final EvaluationContext evaluator) {
+    public static Predicate<Cell> statefulHeaderPredicate(@Nonnull final Iterable<String> accepted,
+                                                          @Nonnull final EvaluationContext evaluator) {
         return input -> Iterables.contains(accepted, evaluator.getCellValue(input).toString());
     }
 
     /**
-     * should be used when evaluator is acquired
-     * can not be reused with different workbook
+     * Header Predicate; should be used when evaluator is acquired. Can't be reused with different workbooks.
+     *
+     * @param evaluator EvaluationContext object
+     * @param accepted vararg of Strings to check
+     * @return Predicate of Cell.
      */
     @Nonnull
-    public static Predicate<Cell> statefulHeaderPredicate(@Nonnull EvaluationContext evaluator, @Nonnull String... accepted) {
+    public static Predicate<Cell> statefulHeaderPredicate(@Nonnull final EvaluationContext evaluator,
+                                                          @Nonnull final String... accepted) {
         return statefulHeaderPredicate(Arrays.asList(accepted), evaluator);
     }
 
-    public static Optional<String> doRegularParamName(@Nullable String entityName, @Nullable String paramName) {
-        if (Strings.isNullOrEmpty(paramName))
+    /**
+     * Make regular parameter name (dotted notation).
+     *
+     * @param entityName String name of entity
+     * @param paramName String name of parameter
+     * @return Optional String depending on entity/parameter names.
+     */
+    public static Optional<String> doRegularParamName(@Nullable final String entityName,
+                                                      @Nullable final String paramName) {
+        if (Strings.isNullOrEmpty(paramName)) {
             return Optional.empty();
-        if (!Strings.isNullOrEmpty(entityName)) {
-            paramName = entityName + "." + paramName;
         }
-        return Optional.of(paramName);
+        return Optional.of(
+                !Strings.isNullOrEmpty(entityName)
+                        ? entityName + "." + paramName
+                        : paramName
+        );
     }
 
+    /**
+     * Function to make list of Params.
+     *
+     * @return &lt;Param&gt; object.
+     */
     public static <Param> Function<Iterator<Param>, List<Param>> listParamsFunc() {
         return new Function<Iterator<Param>, List<Param>>() {
             @Nullable
@@ -127,6 +165,11 @@ public class Utils {
         };
     }
 
+    /**
+     * Function to make map of Param - Variables.
+     *
+     * @return Map of Param - Variables filled.
+     */
     public static <Param, Var> Function<Iterator<Pair<Param, Var>>, Map<Param, Var>> mapVarsFunc() {
         return new Function<Iterator<Pair<Param, Var>>, Map<Param, Var>>() {
             @Nullable
@@ -142,33 +185,55 @@ public class Utils {
         };
     }
 
+    /**
+     * Get default Var Entry Converter.
+     */
     @SuppressWarnings("unchecked")
     public static <Param> VarsEntryConverter<Param, VarEntity<Param>> defaultVarEntryConv() {
-        return (VarsEntryConverter<Param, VarEntity<Param>>) DEFAULT_VAR_ENTRY_C;
+        return (VarsEntryConverter<Param, VarEntity<Param>>) DEFAULT_VAR_ENTRY_CONVERTER;
     }
 
     /**
-     * see {@link Suppliers#memoize(com.google.common.base.Supplier)}
+     * Create new MemoizingSupplier for the delegate (see {@link Suppliers#memoize(com.google.common.base.Supplier)}).
+     *
+     * @param delegate Supplier of T-class
+     * @return new MemoizingSupplier object.
      */
     @Nonnull
-    public static <T> Supplier<T> memoize(@Nonnull Supplier<T> delegate) {
+    public static <T> Supplier<T> memoize(@Nonnull final Supplier<T> delegate) {
         return new MemoizingSupplier<>(Preconditions.checkNotNull(delegate));
     }
 
     /**
-     * assumes, that connected parent iterator routes some items to the {@link Function#apply(Object)} method after
-     * invoking its {@link Iterator#next()}. Acts like a collector with an ability to ask its parent for a value
-     *
-     * @param <T>
+     * Assumes, that connected parent iterator routes some items to the {@link Function#apply(Object)} method after
+     * invoking its {@link Iterator#next()}. Acts like a collector with an ability to ask its parent for a value.
      */
     public static class CachingIterator<T> extends AbstractIterator<T> implements Consumer<T> {
+
+        /**
+         * Supplier of parent objects.
+         */
         protected final Supplier<? extends Iterator<?>> connectedParent;
+
+        /**
+         * Cache; Linked list if used.
+         */
         private final Queue<T> cache = new LinkedList<>();
 
-        public CachingIterator(@Nonnull Supplier<? extends Iterator<?>> connectedParent) {
+        /**
+         * Constructor.
+         *
+         * @param connectedParent Supplier of parent objects.
+         */
+        public CachingIterator(@Nonnull final Supplier<? extends Iterator<?>> connectedParent) {
             this.connectedParent = connectedParent;
         }
 
+        /**
+         * Get the next value from the cache.
+         *
+         * @return &lt;T&gt; class object.
+         */
         @Override
         protected T computeNext() {
             synchronized (connectedParent) {
@@ -183,10 +248,16 @@ public class Utils {
             return cache.remove();
         }
 
+        /**
+         * Insert input object into cache (via cache offer mechanism).
+         *
+         * @param input the input argument.
+         */
         @Override
-        public void accept(T input) {
-            if (input != null)
+        public void accept(final T input) {
+            if (input != null) {
                 cache.offer(input);
+            }
         }
     }
 
@@ -194,19 +265,39 @@ public class Utils {
      * stolen from {@link Suppliers#memoize(com.google.common.base.Supplier)}
      */
     static class MemoizingSupplier<T> implements Supplier<T>, Serializable {
+
+        /**
+         * Supplier of T class.
+         */
         final Supplier<T> delegate;
+
+        /**
+         * Flag if the object is initialized or not.
+         */
         transient volatile boolean initialized;
-        // "value" does not need to be volatile; visibility piggy-backs
-        // on volatile read of "initialized".
+
+        /**
+         * T class value.
+         */
         transient T value;
 
-        MemoizingSupplier(Supplier<T> delegate) {
+        /**
+         * Constructor.
+         *
+         * @param delegate Supplier of T class object.
+         */
+        MemoizingSupplier(final Supplier<T> delegate) {
             this.delegate = delegate;
         }
 
+        /**
+         * Get value; initialize supplier if necessary.
+         *
+         * @return T class object.
+         */
         @Override
         public T get() {
-            // A 2-field variant of Double Checked Locking.
+            // A 2-field variant of Double-checked Locking.
             if (!initialized) {
                 synchronized (this) {
                     if (!initialized) {
@@ -222,22 +313,38 @@ public class Utils {
     }
 
     /**
-     * see https://stackoverflow
-     * .com/questions/19808342/how-to-initialize-a-circular-dependency-final-fields-referencing-each-other?lq=1
+     * see https://stackoverflow.com/questions/19808342/how-to-initialize-a-circular-dependency-final-fields-referencing-each-other?lq=1
      */
     public static class MutableSupplier<T> implements Supplier<T> {
 
+        /**
+         * Flag if value was already set or not.
+         */
         private boolean valueWasSet;
 
+        /**
+         * T class value.
+         */
         private T value;
 
+        /**
+         * Constructor.
+         */
         public MutableSupplier() {
         }
 
+        /**
+         * Create new MutableSupplier object.
+         */
         public static <T> MutableSupplier<T> create() {
             return new MutableSupplier<>();
         }
 
+        /**
+         * Get value.
+         *
+         * @return &lt;T&gt; class object.
+         */
         @Override
         public T get() {
             if (!valueWasSet) {
@@ -246,6 +353,12 @@ public class Utils {
             return value;
         }
 
+        /**
+         * Set value.
+         *
+         * @param value &lt;T&gt; class object
+         * @return &lt;T&gt; class object.
+         */
         public T set(final T value) {
             if (valueWasSet) {
                 throw new IllegalStateException("Value has already been set and should not be reset");

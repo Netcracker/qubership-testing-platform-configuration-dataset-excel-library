@@ -17,21 +17,45 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl;
 
-import org.apache.poi.ss.usermodel.Cell;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.poi.ss.usermodel.Cell;
+
 public class VarsConvInfo<Param> {
+
+    /**
+     * Dataset Cell entity object (parent).
+     */
     public final DSCell entity;
+
+    /**
+     * Dataset Cell parameter object.
+     */
     public final DSCell param;
+
+    /**
+     * Converted Param object.
+     */
     public final Param convertedParam;
+
+    /**
+     * Cell variable object.
+     */
     public final Cell var;
 
-    public VarsConvInfo(@Nullable DSCell entity,
-                        @Nonnull DSCell param,
-                        @Nonnull Param convertedParam,
-                        @Nonnull Cell var) {
+    /**
+     * Constructor.
+     *
+     * @param entity Dataset Cell entity object
+     * @param param Dataset Cell parameter object
+     * @param convertedParam Converted Param object
+     * @param var Cell variable object.
+     */
+    public VarsConvInfo(@Nullable final DSCell entity,
+                        @Nonnull final DSCell param,
+                        @Nonnull final Param convertedParam,
+                        @Nonnull final Cell var) {
         this.entity = entity;
         this.param = param;
         this.convertedParam = convertedParam;
