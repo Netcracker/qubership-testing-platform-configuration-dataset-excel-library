@@ -17,33 +17,68 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl.morphcells;
 
-import org.apache.poi.ss.usermodel.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PropertyDescriptors {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyDescriptors.class);
 
+    /**
+     * Flag if Date starting point is 1904.
+     */
     private final boolean isStartDate1904;
 
-    private PropertyDescriptors(boolean isStartDate1904) {
+    private PropertyDescriptors(final boolean isStartDate1904) {
         this.isStartDate1904 = isStartDate1904;
     }
 
+    /**
+     * Make Property Descriptor for cell.
+     *
+     * @param cellType int type of cell
+     * @param cell Cell object
+     * @param isStartDate1904 Flag if Date starting point is 1904
+     * @return PropertyDescriptor object.
+     */
     @Nonnull
-    public static PropertyDescriptor forCell(int cellType, @Nonnull Cell cell, boolean isStartDate1904) {
+    public static PropertyDescriptor forCell(final int cellType,
+                                             @Nonnull final Cell cell,
+                                             final boolean isStartDate1904) {
         return forCell(CellType.forInt(cellType), cell, isStartDate1904);
     }
 
+    /**
+     * Make Property Descriptor for cell.
+     * If cellType is unknown, it throws IllegalArgumentException.
+     *
+     * @param cellType CellType type of cell
+     * @param cell Cell object
+     * @param isStartDate1904 Flag if Date starting point is 1904
+     * @return PropertyDescriptor object.
+     */
     @Nonnull
-    public static PropertyDescriptor forCell(CellType cellType, @Nonnull Cell cell, boolean isStartDate1904) {
+    public static PropertyDescriptor forCell(final CellType cellType,
+                                             @Nonnull final Cell cell,
+                                             final boolean isStartDate1904) {
         switch (cellType) {
             case BLANK:
             case STRING:
@@ -63,20 +98,40 @@ public class PropertyDescriptors {
         }
     }
 
+    /**
+     * Get PropertyDescriptors for wb Workbook given.
+     * Result depends on isStartDate1904 of the workbook.
+     *
+     * @param wb Workbook object
+     * @return a new PropertyDescriptors object.
+     */
     @Nonnull
-    public static PropertyDescriptors get(@Nonnull Workbook wb) {
+    public static PropertyDescriptors get(@Nonnull final Workbook wb) {
         return new PropertyDescriptors(isStartDate1904(wb));
     }
 
-    public static boolean isStartDate1904(Workbook wb) {
+    /**
+     * Get isStartDate1904 flag of wb Workbook given.
+     *
+     * @param wb Workbook object
+     * @return boolean isStartDate1904 flag of the 1st Sheet of wb Workbook.
+     * If there is no Sheets return false.
+     */
+    public static boolean isStartDate1904(final Workbook wb) {
         Iterator<Sheet> shIter = wb.sheetIterator();
         return shIter.hasNext() && isStartDate1904(shIter.next());
     }
 
     /**
-     * see alandix.com/code/apache-poi-detect-1904-date-option
+     * Check isStartDate1904 of the sheet given.
+     * It's performed via creating row, then creating cell in it, then setting 0.0 as cell value,
+     * then checking isStartDate1904 flag of the cell. Then row is removed.
+     * See alandix.com/code/apache-poi-detect-1904-date-option.
+     *
+     * @param sheet Sheet object
+     * @return boolean isStartDate1904 flag; in case any exceptions return false.
      */
-    public static boolean isStartDate1904(Sheet sheet) {
+    public static boolean isStartDate1904(final Sheet sheet) {
         try {
             Row row = sheet.createRow(sheet.getLastRowNum() + 1);
             Cell cell = row.createCell(0);
@@ -85,15 +140,19 @@ public class PropertyDescriptors {
             sheet.removeRow(row);
             return is1904StartDate;
         } catch (Exception e) {
-            LOGGER.warn("Can not check 1900/1904 start date using sheet [" + sheet + "]", e);
+            LOGGER.warn("Can not check 1900/1904 start date using sheet [{}]", sheet, e);
             return false;
         }
     }
 
     /**
-     * throws an exception for non-numeric cells
+     * Check isStartDate1904 flag of the cell given.
+     * Throws an exception for non-numeric cells.
+     *
+     * @param cell Cell object
+     * @return boolean value.
      */
-    private static boolean isStartDate1904(Cell cell) {
+    private static boolean isStartDate1904(final Cell cell) {
         double value = cell.getNumericCellValue();
         Date date = cell.getDateCellValue();
         Calendar cal = new GregorianCalendar();
@@ -103,9 +162,17 @@ public class PropertyDescriptors {
         return yearSince1900 > yearEstimated1900;
     }
 
+    /**
+     * Create a Change object to convert String newValue and set cell value to it.
+     * The Change includes both apply() and revert() methods.
+     *
+     * @param cell Cell object
+     * @param newValue String new value to convert and set
+     * @return new Change object.
+     */
     @Nonnull
     public Change convertReplaceValue(@Nonnull final Cell cell,
-                                      final @Nullable String newValue) {
+                                      @Nullable final String newValue) {
         final PropertyDescriptor descriptor = forCell(cell);
         final Object origValue = descriptor.getValue(cell);
         return new Change(cell) {
@@ -128,8 +195,16 @@ public class PropertyDescriptors {
         };
     }
 
+    /**
+     * Create a Change object to replace cell value to Object newValue.
+     * The Change includes both apply() and revert() methods.
+     *
+     * @param cell Cell object
+     * @param newValue Object new value to set
+     * @return new Change object.
+     */
     @Nonnull
-    public Change replaceValue(@Nonnull final Cell cell, @Nonnull Object newValue) {
+    public Change replaceValue(@Nonnull final Cell cell, @Nonnull final Object newValue) {
         final PropertyDescriptor descriptor = forCell(cell);
         final Object newValueTypeSafe = descriptor.getValueType().cast(newValue);
         final Object origValue = descriptor.getValue(cell);
@@ -155,29 +230,66 @@ public class PropertyDescriptors {
         };
     }
 
+    /**
+     * Make PropertyDescriptor for int cellType and cell given.
+     *
+     * @param cellType int type of cell
+     * @param cell Cell object
+     * @return PropertyDescriptor object.
+     */
     @Nonnull
-    public PropertyDescriptor forCell(int cellType, @Nonnull Cell cell) {
+    public PropertyDescriptor forCell(final int cellType, @Nonnull final Cell cell) {
         return forCell(CellType.forInt(cellType), cell);
     }
 
+    /**
+     * Make PropertyDescriptor for CellType type of cell and cell given.
+     *
+     * @param cellType CellType type of cell
+     * @param cell Cell object
+     * @return PropertyDescriptor object.
+     */
     @Nonnull
-    public PropertyDescriptor forCell(CellType cellType, @Nonnull Cell cell) {
+    public PropertyDescriptor forCell(final CellType cellType, @Nonnull final Cell cell) {
         return forCell(cellType, cell, isStartDate1904);
     }
 
-    public double dateToDouble(@Nonnull Date date) {
+    /**
+     * Get double value of Date object given, using isStartDate1904 flag.
+     *
+     * @param date Date object
+     * @return double value.
+     */
+    public double dateToDouble(@Nonnull final Date date) {
         return DateUtil.getExcelDate(date, isStartDate1904);
     }
 
-    public double dateToDouble(@Nonnull LocalDateTime date) {
+    /**
+     * Get double value of LocalDateTime object given, using isStartDate1904 flag.
+     *
+     * @param date LocalDateTime object
+     * @return double value.
+     */
+    public double dateToDouble(@Nonnull final LocalDateTime date) {
         return DateUtil.getExcelDate(date, isStartDate1904);
     }
 
+    /**
+     * Get PropertyDescriptor for the cell given.
+     *
+     * @param cell Cell object
+     * @return PropertyDescriptor object.
+     */
     @Nonnull
-    public PropertyDescriptor forCell(@Nonnull Cell cell) {
+    public PropertyDescriptor forCell(@Nonnull final Cell cell) {
         return forCell(cell.getCellType(), cell, isStartDate1904);
     }
 
+    /**
+     * Check if Date starting point is 1904.
+     *
+     * @return true/false value of flag if Date starting point is 1904.
+     */
     public boolean isStartDate1904() {
         return isStartDate1904;
     }
