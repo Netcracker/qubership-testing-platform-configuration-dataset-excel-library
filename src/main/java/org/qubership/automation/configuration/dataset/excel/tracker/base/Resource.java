@@ -17,38 +17,90 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 public interface Resource<T> {
+
+    /**
+     * Get myRefs.
+     *
+     * @return Set of Resource objects.
+     */
     @Nonnull
     Set<? extends Resource> getMyRefs();
 
+    /**
+     * Get all references tree.
+     *
+     * @return Iterator of Resource objects.
+     */
     @Nonnull
     Iterator<? extends Resource> getAllRefsTree();
 
+    /**
+     * Get references to the resource.
+     *
+     * @return Set of Resource objects.
+     */
     @Nonnull
     Set<? extends Resource> getRefsToMe();
 
+    /**
+     * Get all references to the resource tree.
+     *
+     * @return Iterator of Resource objects.
+     */
     @Nonnull
     Iterator<? extends Resource> getAllRefsToMeTree();
 
+    /**
+     * Get the last exception.
+     *
+     * @return Optional of Exception object.
+     */
     Optional<Exception> getLastException();
 
+    /**
+     * Get Resource.
+     *
+     * @return Optional of T-class object.
+     */
     Optional<T> getResource();
 
+    /**
+     * Get path.
+     *
+     * @return Path object.
+     */
     @Nonnull
     Path getPath();
 
+    /**
+     * Get File.
+     *
+     * @return File object.
+     */
     @Nonnull
     File getFile();
 
+    /**
+     * Get the last update time.
+     *
+     * @return long datetime value.
+     */
     long getLastUpdateTime();
 
+    /**
+     * Get status.
+     *
+     * @return ResourceStatus object.
+     */
     @Nonnull
     ResourceStatus getStatus();
 }

@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * only CREATED or UPDATED statuses became the SAME after the next update
+ * only CREATED or UPDATED statuses became the SAME after the next update.
  */
 public enum ResourceStatus {
     CREATED(true, true),
@@ -34,14 +34,25 @@ public enum ResourceStatus {
     private final boolean resourceWasUpdated;
     private final boolean haveResource;
 
-    ResourceStatus(boolean resourceWasUpdated,
-                   boolean haveResource) {
+    /**
+     * Constructor.
+     *
+     * @param resourceWasUpdated flag resource was updated or not
+     * @param haveResource flag resource has children resources or not.
+     */
+    ResourceStatus(final boolean resourceWasUpdated, final boolean haveResource) {
         this.resourceWasUpdated = resourceWasUpdated;
         this.haveResource = haveResource;
     }
 
+    /**
+     * Fail status.
+     *
+     * @param status ResourceStatus status object
+     * @return ResourceStatus failed status.
+     */
     @Nonnull
-    public static ResourceStatus fail(@Nonnull ResourceStatus status) {
+    public static ResourceStatus fail(@Nonnull final ResourceStatus status) {
         switch (status) {
             case CREATED:
                 return FAILED_TO_CREATE;
@@ -52,12 +63,18 @@ public enum ResourceStatus {
         }
     }
 
+    /**
+     * Merge old and new statuses.
+     *
+     * @param oldRS ResourceStatus old status
+     * @param newRS ResourceStatus new status
+     * @return ResourceStatus merged status.
+     */
     @Nonnull
-    public static ResourceStatus merge(@Nullable ResourceStatus oldRS, @Nonnull ResourceStatus newRS) {
+    public static ResourceStatus merge(@Nullable final ResourceStatus oldRS, @Nonnull final ResourceStatus newRS) {
         if (oldRS == null) {
             return newRS;
         }
-
         switch (newRS) {
             case SAME:
                 //should not override negative statuses
@@ -71,21 +88,43 @@ public enum ResourceStatus {
         }
     }
 
+    /**
+     * Get resourceWasUpdated flag.
+     *
+     * @return boolean.
+     */
     public boolean resourceWasUpdated() {
         return resourceWasUpdated;
     }
 
+    /**
+     * Get haveResource flag.
+     *
+     * @return boolean.
+     */
     public boolean haveResource() {
         return haveResource;
     }
 
+    /**
+     * Fail status.
+     *
+     * @return ResourceStatus object.
+     */
     public ResourceStatus failed() {
         return fail(this);
     }
 
-    public ResourceStatus merge(@Nullable ResourceStatus newStatus) {
-        if (newStatus == null || this == newStatus)
+    /**
+     * Merge resource status with a new one.
+     *
+     * @param newStatus ResourceStatus new status
+     * @return ResourceStatus merged result.
+     */
+    public ResourceStatus merge(@Nullable final ResourceStatus newStatus) {
+        if (newStatus == null || this == newStatus) {
             return this;
+        }
         return merge(this, newStatus);
     }
 }

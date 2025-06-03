@@ -17,28 +17,56 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import org.qubership.automation.configuration.dataset.excel.tracker.ResourceUtils;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.qubership.automation.configuration.dataset.excel.tracker.ResourceUtils;
+
 public class FormulaEvalResource extends AbstractResource<FormulaEvaluator> {
 
+    /**
+     * Flag to ignore missing references or not.
+     */
     private final boolean ignoreMissingRefs;
+
+    /**
+     * Set of String paths to references.
+     */
     protected Set<String> myRefPaths;
+
+    /**
+     * Formula Evaluator object.
+     */
     private FormulaEvaluator evaluator;
 
-    public FormulaEvalResource(@Nonnull Path path, @Nonnull RefsSupplier refsSup, long checkThreshold, boolean ignoreMissingRefs) {
+    /**
+     * Constructor.
+     *
+     * @param path Path to resource
+     * @param refsSup References Supplier object
+     * @param checkThreshold long check threshold value
+     * @param ignoreMissingRefs Flag to ignore missing references or not.
+     */
+    public FormulaEvalResource(@Nonnull final Path path,
+                               @Nonnull final RefsSupplier refsSup,
+                               final long checkThreshold,
+                               final boolean ignoreMissingRefs) {
         super(path, refsSup, checkThreshold);
         this.ignoreMissingRefs = ignoreMissingRefs;
     }
 
+    /**
+     * Close resource.
+     *
+     * @throws IOException in case IO errors occurred.
+     */
     @Override
     public void close() throws IOException {
         super.close();
@@ -46,26 +74,48 @@ public class FormulaEvalResource extends AbstractResource<FormulaEvaluator> {
         this.evaluator = null;
     }
 
+    /**
+     * Before-collaboration-change handler.
+     *
+     * @param path Path to DataSetList file
+     * @param file File object
+     * @throws Exception in case IO or parsing errors occurred.
+     */
     @Override
-    protected void beforeCollaboration(@Nonnull Path path, @Nonnull File file) throws Exception {
+    protected void beforeCollaboration(@Nonnull final Path path, @Nonnull final File file) throws Exception {
         Workbook wb = ResourceUtils.doWorkBook(file);
         evaluator = wb.getCreationHelper().createFormulaEvaluator();
         evaluator.setIgnoreMissingWorkbooks(ignoreMissingRefs);
         myRefPaths = ResourceUtils.getRefs(wb);
     }
 
+    /**
+     * Get myRefsPaths.
+     *
+     * @return Set of String paths.
+     */
     @Nullable
     @Override
     protected Set<String> getMyRefsPaths() {
         return myRefPaths;
     }
 
+    /**
+     * Get eval.
+     *
+     * @return FormulaEvaluator object.
+     */
     @Nullable
     @Override
     public FormulaEvaluator getEval() {
         return evaluator;
     }
 
+    /**
+     * Get resource.
+     *
+     * @return FormulaEvaluator object.
+     */
     @Nullable
     @Override
     protected FormulaEvaluator getRes() {

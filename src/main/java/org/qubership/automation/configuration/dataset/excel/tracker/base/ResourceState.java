@@ -17,42 +17,88 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import org.apache.commons.io.IOUtils;
-
-import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.io.IOUtils;
+
 public abstract class ResourceState<T> implements Resource<T>, Closeable {
+
+    /**
+     * Path to the resource.
+     */
     protected final Path path;
+
+    /**
+     * File of the resource.
+     */
     protected final File file;
 
+    /**
+     * Flag if the resource exists or not.
+     */
     protected boolean exists;
+
+    /**
+     * Last modification time.
+     */
     protected long lastModified;
+
+    /**
+     * Flag if the resource is a directory or not.
+     */
     protected boolean directory;
+
+    /**
+     * Resource content length.
+     */
     protected long length;
 
+    /**
+     * Last refresh time.
+     */
     protected long lastRefreshed = -1L;
+
+    /**
+     * Last update time.
+     */
     protected long lastUpdated = -1L;
 
+    /**
+     * Last exception.
+     */
     protected Exception lastException;
 
-
-    public ResourceState(@Nonnull Path path) {
+    /**
+     * Constructor.
+     *
+     * @param path Path to resource.
+     */
+    public ResourceState(@Nonnull final Path path) {
         this.path = path;
         this.file = path.toFile();
     }
 
-    protected ResourceStatus beforeCollaborationUpdate(long checkThreshold) {
+    /**
+     * Before-collaboration-update handler.
+     *
+     * @param checkThreshold long threshold value
+     * @return ResourceStatus object.
+     */
+    protected ResourceStatus beforeCollaborationUpdate(final long checkThreshold) {
         long curTime = System.currentTimeMillis();
-        if ((curTime - lastRefreshed) < checkThreshold)
+        if ((curTime - lastRefreshed) < checkThreshold) {
             return ResourceStatus.SAME;
+        }
         boolean origExists = exists;
-        if (!_refresh())
+        if (!_refresh()) {
             return ResourceStatus.SAME;
+        }
         lastRefreshed = curTime;
         if (!exists) {
             IOUtils.closeQuietly(this);
@@ -69,6 +115,11 @@ public abstract class ResourceState<T> implements Resource<T>, Closeable {
         }
     }
 
+    /**
+     * Refresh method.
+     *
+     * @return true if some of {exists, lastModified, directory, length} was changed.
+     */
     protected boolean _refresh() {
         // cache original values
         final boolean origExists = exists;
@@ -83,41 +134,77 @@ public abstract class ResourceState<T> implements Resource<T>, Closeable {
         length = exists && !directory ? file.length() : 0;
 
         // Return if there are changes
-        return exists != origExists ||
-                lastModified != origLastModified ||
-                directory != origDirectory ||
-                length != origLength;
+        return exists != origExists || lastModified != origLastModified
+                || directory != origDirectory || length != origLength;
     }
 
-    protected void beforeCollaboration(@Nonnull Path path, @Nonnull File file) throws Exception {
+    /**
+     * Before-collaboration-update handler.
+     *
+     * @param path Path to resource
+     * @param file File of resource
+     * @throws Exception in case IO errors occurred.
+     */
+    protected void beforeCollaboration(@Nonnull final Path path, @Nonnull final File file) throws Exception {
 
     }
 
-    protected void afterCollaboration(@Nonnull Path path, @Nonnull File file) throws Exception {
+    /**
+     * After-collaboration-update handler.
+     *
+     * @param path Path to resource
+     * @param file File of resource.
+     */
+    protected void afterCollaboration(@Nonnull final Path path, @Nonnull final File file) {
 
     }
 
+    /**
+     * Get the last exception.
+     *
+     * @return Optional of Exception object.
+     */
     @Override
     public Optional<Exception> getLastException() {
         return Optional.ofNullable(lastException);
     }
 
+    /**
+     * Get path.
+     *
+     * @return Path object.
+     */
     @Nonnull
     @Override
     public Path getPath() {
         return path;
     }
 
+    /**
+     * Get File.
+     *
+     * @return File object.
+     */
     @Nonnull
     public File getFile() {
         return file;
     }
 
+    /**
+     * Get the last update time.
+     *
+     * @return long value.
+     */
     @Override
     public long getLastUpdateTime() {
         return lastUpdated;
     }
 
+    /**
+     * Close object.
+     *
+     * @throws IOException in case IO errors occurred.
+     */
     @Override
     public void close() throws IOException {
         lastException = null;

@@ -17,15 +17,6 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Maps;
-import org.apache.poi.ss.formula.CollaboratingWorkbooksEnvironment;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -33,27 +24,70 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nonnull;
+
+import org.apache.poi.ss.formula.CollaboratingWorkbooksEnvironment;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
+
 public class ExternalRefsSupplier implements RefsSupplier {
+
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalRefsSupplier.class);
+
+    /**
+     * References cache.
+     */
     private final Cache<Path, FormulaEvalResource> existingRefs;
+
+    /**
+     * Check Threshold value.
+     */
     private final long checkThreshold;
+
+    /**
+     * Flag to ignore missing references or not.
+     */
     private final boolean ignoreMissingRefs;
 
-    public ExternalRefsSupplier(long checkThreshold, boolean ignoreMissingRefs) {
+    /**
+     * Constructor.
+     *
+     * @param checkThreshold Check Threshold value
+     * @param ignoreMissingRefs Flag to ignore missing references or not
+     */
+    public ExternalRefsSupplier(final long checkThreshold, final boolean ignoreMissingRefs) {
         this.checkThreshold = checkThreshold;
         this.ignoreMissingRefs = ignoreMissingRefs;
         existingRefs = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).weakValues().build();
     }
 
+    /**
+     * Get reference.
+     *
+     * @param dependent Resource dependent object
+     * @param path Path of dependent object
+     * @return AbstractResource of FormulaEvaluator object
+     * @throws Exception in case IO errors occurred.
+     */
     @Nonnull
     @Override
-    public AbstractResource<FormulaEvaluator> getRef(@Nonnull Resource dependent, @Nonnull String path) throws Exception {
+    public AbstractResource<FormulaEvaluator> getRef(@Nonnull final Resource dependent,
+                                                     @Nonnull final String path) throws Exception {
         Path actual = dependent.getPath().getParent().resolve(Paths.get(path));
         FormulaEvalResource result;
         try {
             result = existingRefs.get(actual, () -> {
                 FormulaEvalResource resource;
-                resource = new FormulaEvalResource(actual, ExternalRefsSupplier.this, checkThreshold, ignoreMissingRefs);
+                resource = new FormulaEvalResource(actual, ExternalRefsSupplier.this, checkThreshold,
+                        ignoreMissingRefs);
                 resource.beforeCollaborationUpdate();
                 return resource;
             });
@@ -63,8 +97,14 @@ public class ExternalRefsSupplier implements RefsSupplier {
         return result;
     }
 
+    /**
+     * Set Up collaborating Environment.
+     *
+     * @param resource AbstractResource object
+     * @throws Exception in case IO errors occurred.
+     */
     @Override
-    public synchronized void setupCollaboratingEnv(@Nonnull AbstractResource<?> resource) throws Exception {
+    public synchronized void setupCollaboratingEnv(@Nonnull final AbstractResource<?> resource) throws Exception {
         Iterator<? extends AbstractResource> qwe = resource.getCollaboration();
         Map<String, FormulaEvaluator> actualEnv = Maps.newHashMap();
         while (qwe.hasNext()) {
@@ -72,26 +112,28 @@ public class ExternalRefsSupplier implements RefsSupplier {
             FormulaEvaluator eval = res.getEval();
             String actualPath = res.getActualPath(ignoreMissingRefs);
             if (eval == null) {
-                String messaqge = String.format("Can not initialize %s because it's ref %s on path [%s] is broken"
-                        , resource
-                        , res
-                        , actualPath);
+                String message = String.format("Can not initialize %s because it's ref %s on path [%s] is broken",
+                        resource, res, actualPath);
                 Exception cause = res.getLastException().orElse(null);
                 if (ignoreMissingRefs) {
-                    LOGGER.warn(messaqge, cause);
+                    LOGGER.warn(message, cause);
                 } else {
-                    throw new Exception(messaqge, cause);
+                    throw new Exception(message, cause);
                 }
                 continue;
             }
             actualEnv.put(actualPath, eval);
         }
-        if (actualEnv.size() == 1)
+        if (actualEnv.size() == 1) {
             return;
+        }
         CollaboratingWorkbooksEnvironment.setupFormulaEvaluator(actualEnv);
-
     }
-    public void clearChache(){
+
+    /**
+     * Clear references cache.
+     */
+    public void clearCache() {
         existingRefs.invalidateAll();
     }
 }

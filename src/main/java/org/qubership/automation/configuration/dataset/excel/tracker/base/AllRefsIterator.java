@@ -17,30 +17,53 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.Sets;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.Sets;
+
 /**
- * checks parents too
+ * Checks parents too.
  */
 public abstract class AllRefsIterator<T> extends AbstractIterator<AbstractResource<T>> {
+
+    /**
+     * Items iterator deque.
+     */
     private final Deque<Iterator<? extends AbstractResource<T>>> items;
+
+    /**
+     * Set of processed resources, to avoid infinite cycles.
+     */
     private final Set<AbstractResource<T>> cyclicProtection;
+
+    /**
+     * Last processed resource object.
+     */
     private AbstractResource<T> lastProcessed;
 
-    public AllRefsIterator(@Nonnull Iterator<? extends AbstractResource<T>> parents) {
+    /**
+     * Constructor.
+     *
+     * @param parents Iterator of AbstractResource objects (parent objects).
+     */
+    public AllRefsIterator(@Nonnull final Iterator<? extends AbstractResource<T>> parents) {
         items = new LinkedList<>();
         cyclicProtection = Sets.newHashSetWithExpectedSize(5);
         items.add(parents);
     }
 
+    /**
+     * Compute next resource.
+     *
+     * @return AbstractResource object.
+     */
     @Override
     protected AbstractResource<T> computeNext() {
         if (lastProcessed != null) {
@@ -59,14 +82,20 @@ public abstract class AllRefsIterator<T> extends AbstractIterator<AbstractResour
             }
         }
         AbstractResource<T> result = temp.next();
-        if (cyclicProtection.contains(result))
+        if (cyclicProtection.contains(result)) {
             return computeNext();
+        }
         lastProcessed = result;
         cyclicProtection.add(result);
-
         return result;
     }
 
+    /**
+     * Get children resources of the parent.
+     *
+     * @param parent AbstractResource object
+     * @return Iterator of AbstractResource objects.
+     */
     @Nullable
     protected abstract Iterator<? extends AbstractResource<T>> getChildren(@Nonnull AbstractResource<?> parent);
 }

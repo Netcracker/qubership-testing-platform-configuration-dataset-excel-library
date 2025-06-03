@@ -17,14 +17,28 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-
 import javax.annotation.Nonnull;
+
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 public interface RefsSupplier {
 
+    /**
+     * Get reference.
+     *
+     * @param dependent Resource dependent resource object
+     * @param path String path to resource
+     * @return AbstractResource ot FormulaEvaluator
+     * @throws Exception in case different errors occurred.
+     */
     @Nonnull
     AbstractResource<FormulaEvaluator> getRef(@Nonnull Resource dependent, @Nonnull String path) throws Exception;
 
+    /**
+     * Set Up collaborating Environment.
+     *
+     * @param resource AbstractResource object
+     * @throws Exception in case different errors occurred.
+     */
     void setupCollaboratingEnv(@Nonnull AbstractResource<?> resource) throws Exception;
 }
