@@ -96,7 +96,7 @@ public abstract class ResourceState<T> implements Resource<T>, Closeable {
             return ResourceStatus.SAME;
         }
         boolean origExists = exists;
-        if (!_refresh()) {
+        if (!refreshResourceState()) {
             return ResourceStatus.SAME;
         }
         lastRefreshed = curTime;
@@ -120,7 +120,7 @@ public abstract class ResourceState<T> implements Resource<T>, Closeable {
      *
      * @return true if some of {exists, lastModified, directory, length} was changed.
      */
-    protected boolean _refresh() {
+    protected boolean refreshResourceState() {
         // cache original values
         final boolean origExists = exists;
         final long origLastModified = lastModified;

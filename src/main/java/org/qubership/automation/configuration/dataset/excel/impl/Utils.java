@@ -159,7 +159,7 @@ public class Utils {
         return new Function<Iterator<Param>, List<Param>>() {
             @Nullable
             @Override
-            public List<Param> apply(@Nonnull Iterator<Param> input) {
+            public List<Param> apply(@Nonnull final Iterator<Param> input) {
                 return Lists.newArrayList(input);
             }
         };
@@ -174,7 +174,7 @@ public class Utils {
         return new Function<Iterator<Pair<Param, Var>>, Map<Param, Var>>() {
             @Nullable
             @Override
-            public Map<Param, Var> apply(@Nonnull Iterator<Pair<Param, Var>> input) {
+            public Map<Param, Var> apply(@Nonnull final Iterator<Pair<Param, Var>> input) {
                 Map<Param, Var> result = Maps.newHashMap();
                 while (input.hasNext()) {
                     Pair<Param, Var> item = input.next();
@@ -262,7 +262,7 @@ public class Utils {
     }
 
     /**
-     * stolen from {@link Suppliers#memoize(com.google.common.base.Supplier)}
+     * Stolen from {@link Suppliers#memoize(com.google.common.base.Supplier)}.
      */
     static class MemoizingSupplier<T> implements Supplier<T>, Serializable {
 
@@ -313,7 +313,8 @@ public class Utils {
     }
 
     /**
-     * see https://stackoverflow.com/questions/19808342/how-to-initialize-a-circular-dependency-final-fields-referencing-each-other?lq=1
+     * See /questions/19808342/how-to-initialize-a-circular-dependency-final-fields-referencing-each-other?lq=1
+     * at <a href="https://stackoverflow.com/">Stackoverflow</a> for general information.
      */
     public static class MutableSupplier<T> implements Supplier<T> {
 
@@ -335,6 +336,8 @@ public class Utils {
 
         /**
          * Create new MutableSupplier object.
+         *
+         * @return MutableSupplier of T-class object.
          */
         public static <T> MutableSupplier<T> create() {
             return new MutableSupplier<>();

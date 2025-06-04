@@ -146,11 +146,11 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
             @Nullable
             @Override
             protected Iterator<? extends AbstractResource> getChildren(@Nonnull final AbstractResource parent) {
-                Iterator<? extends AbstractResource> refsToMe = parent.refsToMe == null ?
-                        ImmutableSet.<AbstractResource>of().iterator()
+                Iterator<? extends AbstractResource> refsToMe = parent.refsToMe == null
+                        ? ImmutableSet.<AbstractResource>of().iterator()
                         : parent.refsToMe.iterator();
-                Iterator<? extends AbstractResource> myRefs = parent.myRefs == null ?
-                        ImmutableSet.<AbstractResource>of().iterator()
+                Iterator<? extends AbstractResource> myRefs = parent.myRefs == null
+                        ? ImmutableSet.<AbstractResource>of().iterator()
                         : parent.myRefs.values().iterator();
                 return Iterators.concat(myRefs, refsToMe);
             }
@@ -245,15 +245,14 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
      */
     protected <V> Optional<V> processResource(@Nullable ResourceStatus newStatus,
                                               @Nonnull final Callable<V> callable) {
-        V result;
-        newStatus = getStatus().merge(newStatus); // should merge statuses because of the 'SAME'
-        if (!newStatus.haveResource()) {
-            setStatus(newStatus);
+        ResourceStatus mergedStatus = getStatus().merge(newStatus); // should merge statuses because of the 'SAME'
+        if (!mergedStatus.haveResource()) {
+            setStatus(mergedStatus);
             return Optional.empty();
         }
         try {
-            result = callable.call();
-            setStatus(newStatus);
+            V result = callable.call();
+            setStatus(mergedStatus);
             return Optional.ofNullable(result);
         } catch (Exception e) {
             lastException = e;
@@ -310,8 +309,8 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
             return;
         }
         Set<String> refPaths = getMyRefsPaths();
-        refPaths = refPaths == null ? Collections.<String>emptySet() : refPaths;
-        Set<String> currentRefPaths = myRefs == null ? Collections.<String>emptySet() : myRefs.keySet();
+        refPaths = refPaths == null ? Collections.emptySet() : refPaths;
+        Set<String> currentRefPaths = myRefs == null ? Collections.emptySet() : myRefs.keySet();
 
         for (String toDelete : Sets.difference(currentRefPaths, refPaths).immutableCopy()) {
             removeRef(toDelete);
@@ -483,11 +482,6 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder("[")
-                .append(getStatus())
-                .append("|DataSet|")
-                .append(getPath())
-                .append("]");
-        return result.toString();
+        return "[" + getStatus() + "|DataSet|" + getPath() + "]";
     }
 }

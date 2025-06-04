@@ -224,7 +224,7 @@ public abstract class PropertyDescriptor<T> {
      * @return T class value of the cell.
      */
     @Nonnull
-    public abstract T fromString(@Nonnull final String str, @Nonnull final Cell cell);
+    public abstract T fromString(@Nonnull String str, @Nonnull Cell cell);
 
     /**
      * Make String representation of the value,
@@ -236,7 +236,7 @@ public abstract class PropertyDescriptor<T> {
      * @return String representation.
      */
     @Nonnull
-    public abstract String toString(@Nonnull final T value, @Nonnull final Cell cell);
+    public abstract String toString(@Nonnull T value, @Nonnull Cell cell);
 
     /**
      * Get value.
@@ -245,7 +245,7 @@ public abstract class PropertyDescriptor<T> {
      * @return T-class value.
      */
     @Nonnull
-    public abstract T getValue(@Nonnull final Cell cell);
+    public abstract T getValue(@Nonnull Cell cell);
 
     /**
      * Set value.
@@ -253,7 +253,7 @@ public abstract class PropertyDescriptor<T> {
      * @param cell Cell object
      * @param value T-class value to set.
      */
-    public abstract void setValue(@Nonnull final Cell cell, @Nonnull final T value);
+    public abstract void setValue(@Nonnull Cell cell, @Nonnull T value);
 
     /**
      * Set cell value from String.
@@ -317,8 +317,20 @@ public abstract class PropertyDescriptor<T> {
      * {@link DataFormatter#formatRawCellContents(double, int, java.lang.String, boolean)} found.
      */
     public static class Numeric extends PropertyDescriptor<Double> {
+
+        /**
+         * Flag if Date starting point is 1904.
+         */
         private final boolean isStartDate1904;
+
+        /**
+         * DataFormatter object.
+         */
         private final DataFormatter formatter;
+
+        /**
+         * SimpleDateFormatter object.
+         */
         private final SimpleDateFormat dformat;
 
         /**

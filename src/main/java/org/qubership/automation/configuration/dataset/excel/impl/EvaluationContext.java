@@ -75,7 +75,7 @@ public class EvaluationContext {
     public EvaluationContext(@Nonnull final Workbook wb, @Nonnull final ReevaluateFormulas strategy) {
         this.wb = wb;
         this.strategy = strategy;
-        this.cleanup = cleanupRunnable(strategy.evaluationContextCleanup,this);
+        this.cleanup = cleanupRunnable(strategy.evaluationContextCleanup, this);
         this.descriptors = PropertyDescriptors.get(wb);
     }
 

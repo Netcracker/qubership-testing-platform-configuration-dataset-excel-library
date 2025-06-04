@@ -85,7 +85,7 @@ public abstract class AbstractTracker<Param, Params, Vars> {
         cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES)
                 .weakValues().build(new CacheLoader<Path, DataSetListResource<Param, Params, Vars>>() {
             @Override
-            public DataSetListResource<Param, Params, Vars> load(@Nonnull Path key) throws Exception {
+            public DataSetListResource<Param, Params, Vars> load(@Nonnull final Path key) {
                 return new DataSetListResource<>(key,
                         AbstractTracker.this.extRefs,
                         AbstractTracker.this.checkThreshold,

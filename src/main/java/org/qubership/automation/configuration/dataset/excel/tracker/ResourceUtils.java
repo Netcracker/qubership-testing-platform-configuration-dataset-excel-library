@@ -145,7 +145,6 @@ public class ResourceUtils {
     /**
      * Get resource function.
      *
-     * @param &lt;T&gt; T-class parameter.
      * @return T Function.
      */
     @SuppressWarnings("unchecked")

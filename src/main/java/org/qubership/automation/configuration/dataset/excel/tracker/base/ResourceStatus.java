@@ -24,21 +24,52 @@ import javax.annotation.Nullable;
  * only CREATED or UPDATED statuses became the SAME after the next update.
  */
 public enum ResourceStatus {
+
+    /**
+     * Constant for 'Created' resource status.
+     */
     CREATED(true, true),
+
+    /**
+     * Constant for 'Updated' resource status.
+     */
     UPDATED(true, true),
+
+    /**
+     * Constant for 'Deleted' resource status.
+     */
     DELETED(true, false),
+
+    /**
+     * Constant for 'Failed to create' resource status.
+     */
     FAILED_TO_CREATE(false, false),
+
+    /**
+     * Constant for 'Failed to update' resource status.
+     */
     FAILED_TO_UPDATE(false, true),
+
+    /**
+     * Constant for 'The same' resource status.
+     */
     SAME(false, true);
 
+    /**
+     * Flag if resource was updated or not.
+     */
     private final boolean resourceWasUpdated;
+
+    /**
+     * Flag 'have resource' or not.
+     */
     private final boolean haveResource;
 
     /**
      * Constructor.
      *
      * @param resourceWasUpdated flag resource was updated or not
-     * @param haveResource flag resource has children resources or not.
+     * @param haveResource flag 'have resource' or not.
      */
     ResourceStatus(final boolean resourceWasUpdated, final boolean haveResource) {
         this.resourceWasUpdated = resourceWasUpdated;
@@ -75,17 +106,11 @@ public enum ResourceStatus {
         if (oldRS == null) {
             return newRS;
         }
-        switch (newRS) {
-            case SAME:
-                //should not override negative statuses
-                if (oldRS.resourceWasUpdated() && oldRS.haveResource()) {
-                    return SAME;
-                } else {
-                    return oldRS;
-                }
-            default:
-                return newRS;
+        if (newRS == ResourceStatus.SAME) {
+            // Should not override negative statuses
+            return oldRS.resourceWasUpdated() && oldRS.haveResource() ? SAME : oldRS;
         }
+        return newRS;
     }
 
     /**
@@ -122,9 +147,6 @@ public enum ResourceStatus {
      * @return ResourceStatus merged result.
      */
     public ResourceStatus merge(@Nullable final ResourceStatus newStatus) {
-        if (newStatus == null || this == newStatus) {
-            return this;
-        }
-        return merge(this, newStatus);
+        return newStatus == null || this == newStatus ? this : merge(this, newStatus);
     }
 }
