@@ -65,8 +65,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Build and Publish current SNAPSHOT (dry run)"
-        uses: netcracker/qubership-workflow-hub/actions/maven-release@v1.0.1
+        uses: netcracker/qubership-workflow-hub/actions/maven-release@v1.0.3
         with:
+          java-version: "8"
           version-type: ${{ github.event.inputs.version-type }}
           module: ${{ github.event.repository.name }}
           maven-args: ${{ inputs.mvn-args }}
@@ -95,8 +96,9 @@ jobs:
       - name: "Build and Publish"
         id: build-and-publish
 
-        uses: netcracker/qubership-workflow-hub/actions/maven-release@v1.0.1
+        uses: netcracker/qubership-workflow-hub/actions/maven-release@v1.0.3
         with:
+          java-version: "8"
           version-type: ${{ github.event.inputs.version-type }}
           module: ${{ github.event.repository.name }}
           maven-args: ${{ inputs.mvn-args }}

@@ -17,7 +17,7 @@
     </properties>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Configuration Dataset Excel library</description>
+    <description>Qubership Testing Platform Configuration Dataset Excel library</description>
     <url>https://github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library</url>
     <licenses>
         <license>
@@ -35,7 +35,7 @@
     </developers>
     <scm>
         <connection>scm:git:https//github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library.git</connection>
-        <developerConnection>scm:git:https://github.com:Netcracker/qubership-testing-platform-configuration-dataset-excel-library.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library.git</developerConnection>
         <url>scm:git:https://github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library/tree/main</url>
     </scm>
 
