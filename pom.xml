@@ -35,7 +35,7 @@
     <scm>
         <connection>scm:git:https//github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library.git</developerConnection>
-        <url>scm:git:https://github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library/tree/main</url>
+        <url>scm:git:https://github.com/Netcracker/qubership-testing-platform-configuration-dataset-excel-library.git</url>
       <tag>HEAD</tag>
   </scm>
 
