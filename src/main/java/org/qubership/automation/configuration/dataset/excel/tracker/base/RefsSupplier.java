@@ -17,9 +17,9 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import javax.annotation.Nonnull;
-
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+
+import jakarta.annotation.Nonnull;
 
 public interface RefsSupplier {
 

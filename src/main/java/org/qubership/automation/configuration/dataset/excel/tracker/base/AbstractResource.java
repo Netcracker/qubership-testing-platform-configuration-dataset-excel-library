@@ -26,9 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.qubership.automation.configuration.dataset.excel.tracker.ResourceUtils;
 import org.slf4j.Logger;
@@ -40,6 +37,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractResource<T> extends ResourceState<T> {
 
@@ -122,7 +121,7 @@ public abstract class AbstractResource<T> extends ResourceState<T> {
     @Nonnull
     public static Iterator<AbstractResource<FormulaEvaluator>> getAllRefsTree(
             final Iterator<AbstractResource<FormulaEvaluator>> parents) {
-        return new AllRefsIterator<FormulaEvaluator>(parents) {
+        return new AllRefsIterator<>(parents) {
             @Nullable
             @Override
             protected Iterator<? extends AbstractResource<FormulaEvaluator>> getChildren(

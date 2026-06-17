@@ -24,9 +24,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.qubership.automation.configuration.dataset.excel.builder.DataSetBuilder;
 import org.qubership.automation.configuration.dataset.excel.core.DSList;
 import org.qubership.automation.configuration.dataset.excel.core.DSLists;
@@ -37,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractTracker<Param, Params, Vars> {
 
@@ -83,16 +82,16 @@ public abstract class AbstractTracker<Param, Params, Vars> {
         this.extRefs = new ExternalRefsSupplier(checkThreshold, ignoreMissingRefs);
         this.ignoreMissingRefs = ignoreMissingRefs;
         cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES)
-                .weakValues().build(new CacheLoader<Path, DataSetListResource<Param, Params, Vars>>() {
-            @Override
-            public DataSetListResource<Param, Params, Vars> load(@Nonnull final Path key) {
-                return new DataSetListResource<>(key,
-                        AbstractTracker.this.extRefs,
-                        AbstractTracker.this.checkThreshold,
-                        AbstractTracker.this::build,
-                        AbstractTracker.this.ignoreMissingRefs);
-            }
-        });
+                .weakValues().build(new CacheLoader<>() {
+                    @Override
+                    public DataSetListResource<Param, Params, Vars> load(@Nonnull final Path key) {
+                        return new DataSetListResource<>(key,
+                                AbstractTracker.this.extRefs,
+                                AbstractTracker.this.checkThreshold,
+                                AbstractTracker.this::build,
+                                AbstractTracker.this.ignoreMissingRefs);
+                    }
+                });
     }
 
     /**

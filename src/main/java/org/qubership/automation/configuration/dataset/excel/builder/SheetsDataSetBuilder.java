@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
 import org.qubership.automation.configuration.dataset.excel.impl.Utils;
+
+import jakarta.annotation.Nonnull;
 
 public class SheetsDataSetBuilder {
 

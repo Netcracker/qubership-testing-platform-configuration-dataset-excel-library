@@ -17,9 +17,9 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl.morphcells;
 
-import javax.annotation.Nonnull;
-
 import org.apache.poi.ss.usermodel.Cell;
+
+import jakarta.annotation.Nonnull;
 
 public abstract class Change {
 

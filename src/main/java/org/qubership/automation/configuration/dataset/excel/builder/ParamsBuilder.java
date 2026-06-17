@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.qubership.automation.configuration.dataset.excel.core.DSList;
 import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.impl.Utils;
+
+import jakarta.annotation.Nonnull;
 
 public class ParamsBuilder {
 

@@ -28,9 +28,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.openxml4j.opc.PackagingURIHelper;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -40,6 +37,8 @@ import org.qubership.automation.configuration.dataset.excel.tracker.base.Resourc
 import org.qubership.automation.configuration.dataset.excel.tracker.base.ResourceStatus;
 
 import com.google.common.collect.Sets;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class ResourceUtils {
 
@@ -47,7 +46,7 @@ public class ResourceUtils {
      * Function to get the last exception for input Resource given.
      */
     public static final Function<? super Resource<?>, Exception> GET_EXCEPTION
-            = new Function<Resource<?>, Exception>() {
+            = new Function<>() {
         @Nullable
         @Override
         public Exception apply(Resource<?> input) {
@@ -124,7 +123,7 @@ public class ResourceUtils {
      * Function to get resource.
      */
     private static final Function<? extends Resource<?>, Object> GET_RESOURCE
-            = new Function<Resource<?>, Object>() {
+            = new Function<>() {
         @Nullable
         @Override
         public Object apply(final Resource input) {

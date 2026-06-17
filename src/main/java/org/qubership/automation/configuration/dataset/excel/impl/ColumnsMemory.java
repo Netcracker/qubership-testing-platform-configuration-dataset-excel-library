@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
 import org.qubership.automation.configuration.dataset.excel.core.ColumnHandler;
@@ -38,6 +35,8 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.PeekingIterator;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * <pre>
@@ -66,7 +65,7 @@ public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
      * Default empty strategy of cells processing.
      */
     private static final Function<Iterator<Cell>, Iterator<Cell>> DEFAULT_EMPTY_STRATEGY
-            = new Function<Iterator<Cell>, Iterator<Cell>>() {
+            = new Function<>() {
         @Nullable
         @Override
         public Iterator<Cell> apply(@Nullable final Iterator<Cell> input) {
@@ -232,7 +231,7 @@ public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
         @Nonnull
         @Override
         public Iterator<Cell> apply(final Iterator<Cell> input) {
-            return new AbstractIterator<Cell>() {
+            return new AbstractIterator<>() {
 
                 @Override
                 protected Cell computeNext() {
@@ -317,7 +316,7 @@ public class ColumnsMemory implements Function<Iterator<Cell>, Iterator<Cell>> {
         @Nonnull
         @Override
         public Iterator<Cell> apply(final Iterator<Cell> input) {
-            return new AbstractIterator<Cell>() {
+            return new AbstractIterator<>() {
                 private final PeekingIterator<CallBackBoundary> boundPeek
                         = Iterators.peekingIterator(initedSortedCbs.iterator());
                 private final PeekingIterator<Cell> inputPeek = Iterators.peekingIterator(input);

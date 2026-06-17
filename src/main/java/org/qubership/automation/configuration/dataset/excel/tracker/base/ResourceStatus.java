@@ -17,8 +17,8 @@
 
 package org.qubership.automation.configuration.dataset.excel.tracker.base;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * only CREATED or UPDATED statuses became the SAME after the next update.

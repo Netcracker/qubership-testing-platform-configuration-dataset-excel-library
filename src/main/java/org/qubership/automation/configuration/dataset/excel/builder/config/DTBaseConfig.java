@@ -17,11 +17,11 @@
 
 package org.qubership.automation.configuration.dataset.excel.builder.config;
 
-import javax.annotation.Nonnull;
-
 import org.qubership.automation.configuration.dataset.excel.core.DSLists;
 import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
+
+import jakarta.annotation.Nonnull;
 
 public class DTBaseConfig<Param, Params, Var, Vars> {
 

@@ -17,12 +17,12 @@
 
 package org.qubership.automation.configuration.dataset.excel.core;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
 import org.qubership.automation.configuration.dataset.excel.impl.morphcells.Changelist;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public interface VarsEntryModificator<Param> {
 

@@ -22,12 +22,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.qubership.automation.configuration.dataset.excel.tracker.ResourceUtils;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class FormulaEvalResource extends AbstractResource<FormulaEvaluator> {
 

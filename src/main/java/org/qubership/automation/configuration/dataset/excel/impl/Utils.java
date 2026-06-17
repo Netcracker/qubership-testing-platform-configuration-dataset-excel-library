@@ -30,9 +30,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
 import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
@@ -45,6 +42,8 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class Utils {
 
@@ -59,7 +58,7 @@ public class Utils {
      * Default converter of values.
      */
     private static final VarsEntryConverter<?, ? extends VarEntity<?>> DEFAULT_VAR_ENTRY_CONVERTER
-            = new VarsEntryConverter<Object, VarEntity<?>>() {
+            = new VarsEntryConverter<>() {
         @Nonnull
         @Override
         public VarEntity<Object> doVarsEntry(@Nullable final DSCell entity,
@@ -156,7 +155,7 @@ public class Utils {
      * @return &lt;Param&gt; object.
      */
     public static <Param> Function<Iterator<Param>, List<Param>> listParamsFunc() {
-        return new Function<Iterator<Param>, List<Param>>() {
+        return new Function<>() {
             @Nullable
             @Override
             public List<Param> apply(@Nonnull final Iterator<Param> input) {
@@ -171,7 +170,7 @@ public class Utils {
      * @return Map of Param - Variables filled.
      */
     public static <Param, Var> Function<Iterator<Pair<Param, Var>>, Map<Param, Var>> mapVarsFunc() {
-        return new Function<Iterator<Pair<Param, Var>>, Map<Param, Var>>() {
+        return new Function<>() {
             @Nullable
             @Override
             public Map<Param, Var> apply(@Nonnull final Iterator<Pair<Param, Var>> input) {
