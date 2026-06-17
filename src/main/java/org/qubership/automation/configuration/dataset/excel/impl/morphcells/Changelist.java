@@ -425,16 +425,6 @@ public class Changelist implements Cell {
         return getCurrentCell().getCellType();
     }
 
-    /**
-     * Get Cell Type Enum.
-     *
-     * @return CellType Enum value of the current cell.
-     */
-    @Override
-    public CellType getCellTypeEnum() {
-        return getCurrentCell().getCellTypeEnum();
-    }
-
     //region not implemented
 
     /**
@@ -472,16 +462,6 @@ public class Changelist implements Cell {
     @Override
     public CellType getCachedFormulaResultType() {
         return getCurrentCell().getCachedFormulaResultType();
-    }
-
-    /**
-     * Get cached formula result type enum.
-     *
-     * @return CellType cached formula result type enum.
-     */
-    @Override
-    public CellType getCachedFormulaResultTypeEnum() {
-        return getCurrentCell().getCachedFormulaResultTypeEnum();
     }
 
     //endregion
