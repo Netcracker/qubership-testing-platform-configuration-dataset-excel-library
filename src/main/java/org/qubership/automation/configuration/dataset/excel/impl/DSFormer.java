@@ -20,9 +20,6 @@ package org.qubership.automation.configuration.dataset.excel.impl;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.qubership.automation.configuration.dataset.excel.builder.config.BaseConfig;
@@ -31,6 +28,8 @@ import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConv
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class DSFormer<Param, Params, Var, Vars> extends AbstractDSFormer<Param, Params, Var, Vars> {
 

@@ -19,10 +19,10 @@ package org.qubership.automation.configuration.dataset.excel.core;
 
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.Cell;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public interface ColumnHandler {
 

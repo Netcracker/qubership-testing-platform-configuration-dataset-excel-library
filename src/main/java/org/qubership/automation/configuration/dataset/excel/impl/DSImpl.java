@@ -21,8 +21,6 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.qubership.automation.configuration.dataset.excel.core.DS;
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
@@ -34,6 +32,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Runnables;
+import jakarta.annotation.Nonnull;
 
 public class DSImpl<Param, Var, Vars> extends Utils.CachingIterator<VarsConvInfo<Param>> implements DS<Param, Vars> {
 
@@ -256,7 +255,7 @@ public class DSImpl<Param, Var, Vars> extends Utils.CachingIterator<VarsConvInfo
 
             // new vars iterator should wrap datasource iterator
             // and pass each element through varConv with nulls omitting.
-            Iterator<Var> vars = new AbstractIterator<Var>() {
+            Iterator<Var> vars = new AbstractIterator<>() {
                 @Override
                 protected Var computeNext() {
                     Var computed = null;

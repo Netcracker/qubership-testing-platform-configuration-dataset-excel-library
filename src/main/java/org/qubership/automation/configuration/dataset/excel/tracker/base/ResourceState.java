@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.io.IOUtils;
+
+import jakarta.annotation.Nonnull;
 
 public abstract class ResourceState<T> implements Resource<T>, Closeable {
 

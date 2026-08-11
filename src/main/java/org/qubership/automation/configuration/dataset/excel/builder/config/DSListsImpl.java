@@ -20,8 +20,6 @@ package org.qubership.automation.configuration.dataset.excel.builder.config;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.qubership.automation.configuration.dataset.excel.core.DSList;
@@ -34,6 +32,7 @@ import org.qubership.automation.configuration.dataset.excel.impl.Utils;
 
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterators;
+import jakarta.annotation.Nonnull;
 
 /**
  * This iterable makes possible to modify base config properties before use.
@@ -106,7 +105,7 @@ public class DSListsImpl<Param, Params, Var, Vars> implements DSLists<Param, Par
     public Iterator<DSList<Param, Params, Vars>> iterator() {
         this.evaluationContext = contextSup.get();
         final Iterator<Sheet> sheets = sheets();
-        return new AbstractIterator<DSList<Param, Params, Vars>>() {
+        return new AbstractIterator<>() {
             @Override
             protected DSList<Param, Params, Vars> computeNext() {
                 DSList<Param, Params, Vars> next = null;

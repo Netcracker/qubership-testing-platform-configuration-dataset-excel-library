@@ -17,11 +17,11 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl;
 
-import javax.annotation.Nonnull;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.qubership.automation.configuration.dataset.excel.core.DS;
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
+
+import jakarta.annotation.Nonnull;
 
 public class DSCell {
 

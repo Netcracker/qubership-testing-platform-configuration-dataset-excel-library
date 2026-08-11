@@ -17,12 +17,11 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl.morphcells;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.Cell;
 
 import com.google.common.base.Strings;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * To be able to manipulate cells with any type with unified API.

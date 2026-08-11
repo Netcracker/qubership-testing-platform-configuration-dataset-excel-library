@@ -22,11 +22,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Sets;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Checks parents too.
@@ -74,6 +73,9 @@ public abstract class AllRefsIterator<T> extends AbstractIterator<AbstractResour
             lastProcessed = null;
         }
         Iterator<? extends AbstractResource<T>> temp = items.peek();
+        if (temp == null) {
+            return endOfData();
+        }
         while (!temp.hasNext()) {
             items.remove();
             temp = items.peek();

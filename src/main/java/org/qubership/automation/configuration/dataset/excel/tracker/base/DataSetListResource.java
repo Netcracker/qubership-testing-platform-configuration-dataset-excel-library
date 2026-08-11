@@ -26,9 +26,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.qubership.automation.configuration.dataset.excel.builder.DataSetBuilder;
@@ -38,6 +35,8 @@ import org.qubership.automation.configuration.dataset.excel.tracker.ResourceUtil
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class DataSetListResource<Param, Params, Vars> extends AbstractResource<Map<String, DSList<Param, Params, Vars>>> {
 
@@ -106,7 +105,7 @@ public class DataSetListResource<Param, Params, Vars> extends AbstractResource<M
     protected void beforeCollaboration(@Nonnull final Path path, @Nonnull final File file) throws Exception {
         Workbook wb = ResourceUtils.doWorkBook(file);
         refsPath = ResourceUtils.getRefs(wb);
-        ds = builder.apply(DataSetBuilder.create(new Supplier<Workbook>() {
+        ds = builder.apply(DataSetBuilder.create(new Supplier<>() {
             @Override
             public Workbook get() {
                 return wb;

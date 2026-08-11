@@ -17,7 +17,7 @@
 
 package org.qubership.automation.configuration.dataset.excel.core;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public interface DS<Param, Vars> extends Named {
 

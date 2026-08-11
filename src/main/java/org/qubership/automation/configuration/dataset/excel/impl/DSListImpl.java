@@ -22,9 +22,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.Sheet;
 import org.qubership.automation.configuration.dataset.excel.core.DS;
 import org.qubership.automation.configuration.dataset.excel.core.DSList;
@@ -32,6 +29,8 @@ import org.qubership.automation.configuration.dataset.excel.core.DSList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Runnables;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class DSListImpl<Param, Params, Vars> extends Utils.CachingIterator<Param>
         implements DSList<Param, Params, Vars> {

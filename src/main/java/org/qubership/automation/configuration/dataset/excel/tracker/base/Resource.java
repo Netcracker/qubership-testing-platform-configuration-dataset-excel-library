@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public interface Resource<T> {
 

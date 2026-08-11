@@ -22,9 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.FormulaParseException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -42,6 +39,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * acts like a proxy for {@link #getCurrentCell()},
@@ -425,16 +424,6 @@ public class Changelist implements Cell {
         return getCurrentCell().getCellType();
     }
 
-    /**
-     * Get Cell Type Enum.
-     *
-     * @return CellType Enum value of the current cell.
-     */
-    @Override
-    public CellType getCellTypeEnum() {
-        return getCurrentCell().getCellTypeEnum();
-    }
-
     //region not implemented
 
     /**
@@ -472,16 +461,6 @@ public class Changelist implements Cell {
     @Override
     public CellType getCachedFormulaResultType() {
         return getCurrentCell().getCachedFormulaResultType();
-    }
-
-    /**
-     * Get cached formula result type enum.
-     *
-     * @return CellType cached formula result type enum.
-     */
-    @Override
-    public CellType getCachedFormulaResultTypeEnum() {
-        return getCurrentCell().getCachedFormulaResultTypeEnum();
     }
 
     //endregion

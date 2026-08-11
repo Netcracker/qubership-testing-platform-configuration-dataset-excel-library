@@ -26,9 +26,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -41,6 +38,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractDSFormer<Param, Params, Var, Vars>
         implements ColumnHandler, Supplier<DSList<Param, Params, Vars>> {
@@ -78,7 +77,7 @@ public abstract class AbstractDSFormer<Param, Params, Var, Vars>
     /**
      * Supplier of cells iterator.
      */
-    private Utils.MutableSupplier<Iterator<Cell>> dataSourceSup = Utils.MutableSupplier.create();
+    private final Utils.MutableSupplier<Iterator<Cell>> dataSourceSup = Utils.MutableSupplier.create();
 
     /**
      * Datasets collection.

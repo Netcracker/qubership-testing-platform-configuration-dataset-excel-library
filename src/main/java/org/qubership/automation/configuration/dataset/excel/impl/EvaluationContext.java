@@ -19,8 +19,6 @@ package org.qubership.automation.configuration.dataset.excel.impl;
 
 import java.util.concurrent.Callable;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -32,6 +30,7 @@ import org.qubership.automation.configuration.dataset.excel.impl.morphcells.UniT
 
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Runnables;
+import jakarta.annotation.Nonnull;
 
 public class EvaluationContext {
 

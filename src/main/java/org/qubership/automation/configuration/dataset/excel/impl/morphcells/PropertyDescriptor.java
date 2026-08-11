@@ -22,9 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -33,6 +30,9 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FormulaError;
 import org.apache.poi.util.LocaleUtil;
 import org.qubership.automation.configuration.dataset.excel.impl.Utils;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class PropertyDescriptor<T> {
 
@@ -61,7 +61,7 @@ public abstract class PropertyDescriptor<T> {
     /**
      * Property Descriptor for String.
      */
-    protected static PropertyDescriptor<String> STRING = new PropertyDescriptor<String>(String.class) {
+    protected static PropertyDescriptor<String> STRING = new PropertyDescriptor<>(String.class) {
 
         @Override
         public int cellType() {
@@ -95,7 +95,7 @@ public abstract class PropertyDescriptor<T> {
     /**
      * Property Descriptor for Formula.
      */
-    protected static PropertyDescriptor<String> FORMULA = new PropertyDescriptor<String>(String.class) {
+    protected static PropertyDescriptor<String> FORMULA = new PropertyDescriptor<>(String.class) {
 
         @Override
         public int cellType() {
@@ -129,7 +129,7 @@ public abstract class PropertyDescriptor<T> {
     /**
      * Property Descriptor for Boolean.
      */
-    protected static PropertyDescriptor<Boolean> BOOLEAN = new PropertyDescriptor<Boolean>(Boolean.class) {
+    protected static PropertyDescriptor<Boolean> BOOLEAN = new PropertyDescriptor<>(Boolean.class) {
 
         @Override
         public int cellType() {
@@ -163,7 +163,7 @@ public abstract class PropertyDescriptor<T> {
     /**
      * Property Descriptor for Errors.
      */
-    protected static PropertyDescriptor<Byte> ERROR = new PropertyDescriptor<Byte>(Byte.class) {
+    protected static PropertyDescriptor<Byte> ERROR = new PropertyDescriptor<>(Byte.class) {
 
         @Override
         public int cellType() {

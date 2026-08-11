@@ -19,8 +19,8 @@ package org.qubership.automation.configuration.dataset.excel.core;
 
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public interface DSList<Param, Params, Vars> extends Named {
 

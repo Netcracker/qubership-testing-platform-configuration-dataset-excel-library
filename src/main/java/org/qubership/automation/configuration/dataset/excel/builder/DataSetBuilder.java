@@ -22,13 +22,12 @@ import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nonnull;
 
 public class DataSetBuilder {
 
@@ -68,7 +67,7 @@ public class DataSetBuilder {
      * @return a new DataSetBuilder object created for Workbook Supplier.
      */
     public static DataSetBuilder create(@Nonnull final Workbook wb) {
-        return create(new Supplier<Workbook>() {
+        return create(new Supplier<>() {
             @Override
             public Workbook get() {
                 return wb;

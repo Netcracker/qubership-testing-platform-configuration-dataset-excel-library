@@ -22,13 +22,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base settings holder.

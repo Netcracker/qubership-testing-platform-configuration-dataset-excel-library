@@ -22,17 +22,15 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.qubership.automation.configuration.dataset.excel.core.DS;
 import org.qubership.automation.configuration.dataset.excel.core.ParamsEntryConverter;
 import org.qubership.automation.configuration.dataset.excel.core.ReevaluateFormulas;
 import org.qubership.automation.configuration.dataset.excel.core.VarsEntryConverter;
-import org.qubership.automation.configuration.dataset.excel.impl.DSCell;
 import org.qubership.automation.configuration.dataset.excel.impl.Utils;
 import org.qubership.automation.configuration.dataset.excel.impl.VarEntity;
+
+import jakarta.annotation.Nonnull;
 
 public class VariablesBuilder<Param, Params> {
 

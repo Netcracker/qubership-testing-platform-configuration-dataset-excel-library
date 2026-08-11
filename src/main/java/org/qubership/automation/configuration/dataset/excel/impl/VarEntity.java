@@ -17,8 +17,8 @@
 
 package org.qubership.automation.configuration.dataset.excel.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class VarEntity<Param> {
 
